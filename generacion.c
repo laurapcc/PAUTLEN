@@ -1,4 +1,4 @@
-#include <generacion.h>
+#include "generacion.h"
 
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
@@ -15,14 +15,24 @@ Con seguridad sabes que deberás reservar una variable entera para guardar el
 puntero de pila extendido (esp). Se te sugiere el nombre __esp para esta variable.
 */
 
-void escribir_subseccion_data(FILE* fpasm);
+void escribir_subseccion_data(FILE* fpasm){
+    if (fpasm == NULL) return;
+
+    fprintf(fpasm, "segment .data\n");
+    fprintf(fpasm, "errormsg db 'Error, division by zero.', 0\n");
+}
 /*
 Declaración (con directiva db) de las variables que contienen el texto de los
 mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
 
-void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano);
+//NO SE PORQ LA VARIABLE TIPO
+void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano){
+    if (fpasm == NULL) return;
+
+    fprintf(fpasm, "_%s resd %d\n", nombre, tamano);
+}
 /*
 Para ser invocada en la sección .bss cada vez que se quiera declarar una
 variable:
