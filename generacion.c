@@ -7,7 +7,10 @@ argumento.
 */
 
 void escribir_cabecera_bss(FILE* fpasm) {
-    
+    if(fpasm == NULL) return;
+
+    fprintf(fpasm, "segment .bss\n");
+    fprintf(fpasm, "__esp resd 1");    
 }
 /*
 Código para el principio de la sección .bss.
@@ -317,3 +320,9 @@ Esta función es necesaria para completar la llamada a métodos, su gestión dif
 conocimiento por parte de la función de llamada del número de argumentos que hay en la
 pila
 */
+
+
+void main(){
+    FILE *f = fopen("a.txt", "w+");
+    escribir_cabecera_bss(f);
+}
