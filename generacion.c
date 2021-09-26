@@ -10,7 +10,7 @@ void escribir_cabecera_bss(FILE* fpasm) {
     if(fpasm == NULL) return;
 
     fprintf(fpasm, "segment .bss\n");
-    fprintf(fpasm, "__esp resd 1");    
+    fprintf(fpasm, "__esp resd 1\n");    
 }
 /*
 Código para el principio de la sección .bss.
@@ -22,7 +22,7 @@ void escribir_subseccion_data(FILE* fpasm){
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "segment .data\n");
-    fprintf(fpasm, "errormsg db 'Error, division by zero.', 0\n");
+    fprintf(fpasm, "error_div_by_zero db 'Error, division by zero.', 0\n");
 }
 /*
 Declaración (con directiva db) de las variables que contienen el texto de los
@@ -47,20 +47,47 @@ vectores, por eso se adjunta un argumento final (tamano) que para esta
 primera práctica siempre recibirá el valor 1.
 */
 
-void escribir_segmento_codigo(FILE* fpasm);
+void escribir_segmento_codigo(FILE* fpasm) {
+    if(fpasm == NULL) return;
+
+    fprintf(fpasm, "segment .txt\n");
+    fprintf(fpasm, "global main\n");
+    fprintf(fpasm, "extern print_int, scan_int, scan_boolean, print_boolean, print_blank, print_string, print_endofline\n");
+
+}
 /*
 Para escribir el comienzo del segmento .text, básicamente se indica que se
 exporta la etiqueta main y que se usarán las funciones declaradas en la librería
 alfalib.o
 */
 
-void escribir_inicio_main(FILE* fpasm);
+void escribir_inicio_main(FILE* fpasm){
+    if(fpasm == NULL) return;
+    fprintf(fpasm, "main:\n");
+    fprintf(fpasm, "mov dword [__esp], esp\n");
+}
 /*
 En este punto se debe escribir, al menos, la etiqueta main y la sentencia que
 guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 
-void escribir_fin(FILE* fpasm);
+void escribir_fin(FILE* fpasm) {
+    if(fpasm == NULL) return;
+    
+    // Division by 0.
+    fprintf(fpasm, "div_by_zero:\n");
+    fprintf(fpasm, "push dword error_div_by_zero\n");
+    fprintf(fpasm, "call print_string\n");
+    fprintf(fpasm, "call print_endofline\n");
+    fprintf(fpasm, "add dword esp, 4\n");
+    fprintf(fpasm, "jmp end_program\n");
+    
+
+    // End program.
+    fprintf(fpasm, "end_program:\n");
+    fprintf(fpasm, "mov dword esp, [__esp]\n");
+    fprintf(fpasm, "ret\n");
+}
 /*
 Al final del programa se escribe:
 - El código NASM para salir de manera controlada cuando se detecta un error
