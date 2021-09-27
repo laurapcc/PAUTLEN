@@ -99,7 +99,16 @@ zona de finalización del programa).
 ·Salir del programa (ret).
 */
 
-void escribir_operando(FILE* fpasm, char* nombre, int es_variable);
+void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
+    if (fpasm == NULL || nombre == NULL) return;
+
+    if (es_variable == 1)
+        fprintf(fpasm, "push dword_%s\n", nombre);
+    else if (es_variable == 0){
+        fprintf(fpasm, "mov dword eax, %s\n", nombre);
+        fprintf(fpasm, "push dword eax\n");
+    }
+}
 /*
 Función que debe ser invocada cuando se sabe un operando de una operación
 aritmético-lógica y se necesita introducirlo en la pila.
