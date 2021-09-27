@@ -102,12 +102,12 @@ zona de finalización del programa).
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
     if (fpasm == NULL || nombre == NULL) return;
 
-    if (es_variable == 1)
-        fprintf(fpasm, "push dword_%s\n", nombre);
-    else if (es_variable == 0){
+    if (es_variable == 0){
         fprintf(fpasm, "mov dword eax, %s\n", nombre);
         fprintf(fpasm, "push dword eax\n");
     }
+    else if (es_variable == 1)
+        fprintf(fpasm, "push dword _%s\n", nombre);
 }
 /*
 Función que debe ser invocada cuando se sabe un operando de una operación
@@ -120,7 +120,17 @@ primer caso internamente se representará como _b1 y, sin embargo, en el
 segundo se representará tal y como esté en el argumento (34).
 */
 
-void asignar(FILE* fpasm, char* nombre, int es_variable);
+void asignar(FILE* fpasm, char* nombre, int es_variable) {
+    if (fpasm == NULL || nombre == NULL) return;
+
+    if (es_variable == 0){
+        fprintf(fpasm, "pop dword [_%s]\n", nombre);
+    }
+    else if (es_variable == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword _%s, [eax]\n", nombre);
+    }
+}
 /*
 - Genera el código para asignar valor a la variable de nombre nombre.
 - Se toma el valor de la cima de la pila.
@@ -143,13 +153,168 @@ controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de e
 controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno
 que no se produce “Segmentation Fault”)
 */
-void sumar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void restar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
-void o(FILE* fpasm, int es_variable_1, int es_variable_2);
-void y(FILE* fpasm, int es_variable_1, int es_variable_2);
-void cambiar_signo(FILE* fpasm, int es_variable);
+void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "sub eax, ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+
+void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "add eax, ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+
+void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* multiply eax times ebx and store result in stack */
+    fprintf(fpasm, "imul ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+
+void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* check denominator != 0 */
+    fprintf(fpasm, "cmp ebx, 0\n");
+    fprintf(fpasm, "je div_by_zero\n");
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "cdq\n");
+    fprintf(fpasm, "idiv ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+
+void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "or eax, ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    if (fpasm == NULL) return;
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* store variable 2 in ebx */
+    if (es_variable_2 == 0)
+        fprintf(fpasm, "pop dword ebx\n");
+    else if (es_variable_2 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "and eax, ebx\n");
+    fprintf(fpasm, "push dword eax\n");
+}
+void cambiar_signo(FILE* fpasm, int es_variable) {
+    if (fpasm == NULL) return;
+
+    /* store variable in eax */
+    if (es_variable == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
+    }
+
+    /* perform operation and store result in stack */
+    fprintf(fpasm, "neg eax\n");
+    fprintf(fpasm, "push dword eax\n");
+}
 /*
 Función aritmética de cambio de signo.
 Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya
