@@ -320,15 +320,29 @@ Función aritmética de cambio de signo.
 Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya
 que sólo usa un operando.
 */
-void no(FILE* fpasm, int es_variable, int cuantos_no);
-/*
-Función monádica lógica de negación. No hay un código de operación de la ALU
-que realice esta operación por lo que se debe codificar un algoritmo que, si
-encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
-El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas,
-la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de
-programa principal como puede gestionarse el número de etiquetas cuantos_no.
-*/
+void no(FILE* fpasm, int es_variable, int cuantos_no) {
+    if (fpasm == NULL) return;
+
+    if (es_variable == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+    else if (es_variable == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx,[eax]\n");
+    }
+
+    fprintf(fpasm,"cmp ebx, 0\n");
+    fprintf(fpasm, "je no_uno_%d", cuantos_no);
+    /* Si en ebx hay un 1, escribo un 0*/
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp uno_%d\n", cuantos_no);
+    
+    fprintf(fpasm, "no_uno_%d:\n", cuantos_no);
+    /* Si en ebx hay un 0, escribo un 1*/
+    fprintf(fpasm,"push dword 1\n");
+
+    fprintf(fpasm, "uno_%d:\n", cuantos_no);
+}
 
 /* FUNCIONES COMPARATIVAS */
 /*
@@ -338,12 +352,197 @@ si se cumple la comparación y “0” si no se cumple), se deja en la pila como
 resto de operaciones. Se deben usar etiquetas para poder gestionar los saltos
 necesarios para implementar las comparaciones.
 */
-void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
+void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "je same_%d\n", etiqueta);
+    /* Si no son iguales escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp distintos_%d\n", etiqueta);
+
+    fprintf(fpasm, "same_%d:\n", etiqueta);
+    /* Si son iguales escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+
+    fprintf(fpasm, "distintos_%d:\n", etiqueta);
+}
+
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "je same_%d\n", etiqueta);
+    /* Si no son iguales escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+    fprintf(fpasm, "jmp distintos_%d\n", etiqueta);
+
+    fprintf(fpasm, "same_%d:\n", etiqueta);
+    /* Si son iguales escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+
+    fprintf(fpasm, "distintos_%d:\n", etiqueta);
+}
+
+void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "jle menor_igual_%d\n", etiqueta);
+    /* Si son mayores escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp mayor_%d\n", etiqueta);
+
+    fprintf(fpasm, "menor_igual_%d:\n", etiqueta);
+    /* Si son iguales escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+
+    fprintf(fpasm, "mayor_%d:\n", etiqueta);
+}
+
+void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "jge mayor_igual_%d\n", etiqueta);
+    /* Si son menores escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp menor_%d\n", etiqueta);
+
+    fprintf(fpasm, "mayor_igual_%d:\n", etiqueta);
+    /* Si son iguales escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+
+    fprintf(fpasm, "menor_%d:\n", etiqueta);
+}
+
+void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "jl menor_%d\n", etiqueta);
+    /* Si no es menor escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp mayor_igual_%d\n", etiqueta);
+
+    fprintf(fpasm, "menor_%d:\n", etiqueta);
+    /* Si es menor escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+
+    fprintf(fpasm, "distintos_%d:\n", etiqueta);
+}
+
+void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    if (fpasm == NULL) return;
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
+    }
+
+    if (es_variable2 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ecx, [eax]\n");
+    }
+    else if(es_variable2 == 0){
+        fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    fprintf(fpasm, "cmp ebx, ecx\n");
+    fprintf(fpasm, "jg mayor_%d\n", etiqueta);
+    /* Si no es mayor escribimos un 0 */
+    fprintf(fpasm, "push dword 0\n");
+    fprintf(fpasm, "jmp menor_igual_%d\n", etiqueta);
+
+    fprintf(fpasm, "mayor_%d:\n", etiqueta);
+    /* Si son iguales escribimos un 1 */
+    fprintf(fpasm, "push dword 1\n");
+
+    fprintf(fpasm, "menor_igual_%d:\n", etiqueta);
+}
 
 /* FUNCIONES DE ESCRITURA Y LECTURA */
 /*
@@ -353,8 +552,46 @@ tipo.
 Se deben insertar en la pila los argumentos necesarios, realizar la llamada
 (call) a la función de librería correspondiente y limpiar la pila.
 */
-void leer(FILE* fpasm, char* nombre, int tipo);
-void escribir(FILE* fpasm, int es_variable, int tipo);
+
+void leer(FILE* fpasm, char* nombre, int tipo) {
+    if (fpasm == NULL) return;
+
+    /* Cargamos en la pila la variable */
+    fprintf(fpasm, "push dword _%s\n", nombre);
+
+    /* LLamadas a las correspondientes funciones */
+    if (tipo == ENTERO){
+        fprintf(fpasm, "call scan_int\n");
+    }
+    else if (tipo == BOOLEANO){
+        fprintf(fpasm, "call scan_boolean\n");
+    }
+
+    /* Limpiamos la pila */
+    fprintf(fpasm, "add esp, 4\n");
+}
+
+void escribir(FILE* fpasm, int es_variable, int tipo) {
+    if (fpasm == NULL) return;
+
+    if (es_variable == 1){
+        fprintf(fpasm, "push dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+        fprintf(fpasm, "push dword ebx\n");
+    }
+    
+    if (tipo == ENTERO){
+        fprintf(fpasm, "call print_int\n");
+    }
+    else if (tipo == BOOLEANO){
+        fprintf(fpasm, "call print_boolean\n");
+    }
+
+    // add 8 o 4??
+    fprintf(fpasm, "add esp, 8\n");
+    /* Salto de linea */
+    fprintf(fpasm, "call print_endofline\n");
+}
 
 void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
 /*
