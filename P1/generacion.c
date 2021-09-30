@@ -23,6 +23,7 @@ void escribir_subseccion_data(FILE* fpasm){
 
     fprintf(fpasm, "segment .data\n");
     fprintf(fpasm, "error_div_by_zero db 'Error, division by zero.', 0\n");
+    fprintf(fpasm, "error_out_of_range db 'Error, index out of range.', 0\n");
 }
 /*
 Declaración (con directiva db) de las variables que contienen el texto de los
@@ -74,6 +75,11 @@ guarda el puntero de pila en su variable (se recomienda usar __esp).
 void escribir_fin(FILE* fpasm) {
     if(fpasm == NULL) return;
     
+    // End program.
+    fprintf(fpasm, "end_program:\n");
+    fprintf(fpasm, "mov dword esp, [__esp]\n");
+    fprintf(fpasm, "ret\n");
+    
     // Division by 0.
     fprintf(fpasm, "div_by_zero:\n");
     fprintf(fpasm, "push dword error_div_by_zero\n");
@@ -82,11 +88,14 @@ void escribir_fin(FILE* fpasm) {
     fprintf(fpasm, "add dword esp, 4\n");
     fprintf(fpasm, "jmp end_program\n");
     
-
-    // End program.
-    fprintf(fpasm, "end_program:\n");
-    fprintf(fpasm, "mov dword esp, [__esp]\n");
-    fprintf(fpasm, "ret\n");
+    // Out of range.
+    fprintf(fpasm, "out_of_range:\n");
+    fprintf(fpasm, "push dword error_out_of_range\n");
+    fprintf(fpasm, "call print_string\n");
+    fprintf(fpasm, "call print_endofline\n");
+    fprintf(fpasm, "add dword esp, 4\n");
+    fprintf(fpasm, "jmp end_program\n");
+    
 }
 /*
 Al final del programa se escribe:
@@ -173,7 +182,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
     }
 
     /* perform operation and store result in stack */
-    fprintf(fpasm, "sub eax, ebx\n");
+    fprintf(fpasm, "add eax, ebx\n");
     fprintf(fpasm, "push dword eax\n");
 }
 
@@ -575,7 +584,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
     if (fpasm == NULL) return;
 
     if (es_variable == 1){
-        fprintf(fpasm, "push dword eax\n");
+        fprintf(fpasm, "pop eax\n");
         fprintf(fpasm, "mov dword ebx, [eax]\n");
         fprintf(fpasm, "push dword ebx\n");
     }
@@ -587,8 +596,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
         fprintf(fpasm, "call print_boolean\n");
     }
 
-    // add 8 o 4??
-    fprintf(fpasm, "add esp, 8\n");
+    fprintf(fpasm, "add esp, 4\n");
     /* Salto de linea */
     fprintf(fpasm, "call print_endofline\n");
 }
@@ -671,7 +679,24 @@ void while_fin( FILE * fpasm, int etiqueta) {
 }
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
-int tam_max, int exp_es_direccion);
+int tam_max, int exp_es_direccion) {
+    if (fpasm == NULL) return;
+
+    fprintf(fpasm, "pop dword eax\n");
+    
+    if (exp_es_direccion == 1){
+        fprintf(fpasm, "mov dword eax,[eax]\n");
+    }
+    /* Check the range */
+    fprintf(fpasm, "cmp eax, 0\n");
+    fprintf(fpasm, "jl out_of_range\n");
+    fprintf(fpasm, "cmp eax, %d-1\n", tam_max);
+    fprintf(fpasm, "jg out_of_range\n");
+    
+    fprintf(fpasm, "mov dword edx, _%s\n", nombre_vector);
+    fprintf(fpasm, "lea eax, [edx + eax*4]\n");
+    fprintf(fpams, "push dword eax\n");
+}
 /*
 Generación de código para indexar un vector
 Cuyo nombre es nombre_vector
@@ -684,7 +709,9 @@ tarea.
 */
 
 
-void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
+void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
+    
+}
 /*
 Generación de código para iniciar la declaración de una función.
 Es necesario proporcionar
@@ -713,7 +740,19 @@ Función para dejar en la cima de la pila la dirección efectiva de la variable 
 la posición posicion_variable_local (recuerda que ordenadas con origen 1)
 */
 
-void asignarDestinoEnPila(FILE* fpasm, int es_variable);
+void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
+    if (fpasm == NULL) return;
+
+    fprintf(fpasm, "pop dword eax\n");
+
+    if (es_variable == 1) {
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+        fprintf(fpasm, "mov dword eax, ebx\n");        
+    }
+
+    fprintf(fpasm, "pop dword ebx\n");
+    fprintf(fpasm, "mov dword [ebx], eax\n");
+}
 /*
 Función para poder asignar a un destino que no es una variable “global” (tipo _x) por
 ejemplo parámetros o variables locales (ya que en ese caso su nombre real de alto nivel, no
