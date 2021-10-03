@@ -209,7 +209,7 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
     }
 
     /* perform operation and store result in stack */
-    fprintf(fpasm, "add eax, ebx\n");
+    fprintf(fpasm, "sub eax, ebx\n");
     fprintf(fpasm, "push dword eax\n");
 }
 
@@ -521,7 +521,7 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     /* Si es menor escribimos un 1 */
     fprintf(fpasm, "push dword 1\n");
 
-    fprintf(fpasm, "distintos_%d:\n", etiqueta);
+    fprintf(fpasm, "mayor_igual_%d:\n", etiqueta);
 }
 
 void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
