@@ -132,12 +132,15 @@ segundo se representará tal y como esté en el argumento (34).
 void asignar(FILE* fpasm, char* nombre, int es_variable) {
     if (fpasm == NULL || nombre == NULL) return;
 
+    fprintf(fpasm, "pop dword eax\n");
+
     if (es_variable == 0){
-        fprintf(fpasm, "pop dword [_%s]\n", nombre);
+        //fprintf(fpasm, "pop dword [_%s]\n", nombre);
+        fprintf(fpasm, "mov dword [_%s], eax\n", nombre);
     }
     else if (es_variable == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword _%s, [eax]\n", nombre);
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+        fprintf(fpasm, "mov dword [_%s], ebx\n", nombre);
     }
 }
 /*
@@ -165,20 +168,20 @@ que no se produce “Segmentation Fault”)
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");        
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* perform operation and store result in stack */
@@ -189,20 +192,20 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* perform operation and store result in stack */
@@ -213,20 +216,20 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* multiply eax times ebx and store result in stack */
@@ -237,20 +240,20 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* check denominator != 0 */
@@ -266,20 +269,20 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* perform operation and store result in stack */
@@ -289,20 +292,20 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
     if (fpasm == NULL) return;
 
-    /* store variable 1 in eax */
-    if (es_variable_1 == 0)
-        fprintf(fpasm, "pop dword eax\n");
-    else if (es_variable_1 == 1){
-        fprintf(fpasm, "pop dword ecx\n");
-        fprintf(fpasm, "mov dword eax, [ecx]\n");
-    }
-
     /* store variable 2 in ebx */
     if (es_variable_2 == 0)
         fprintf(fpasm, "pop dword ebx\n");
     else if (es_variable_2 == 1){
         fprintf(fpasm, "pop dword ecx\n");
         fprintf(fpasm, "mov dword ebx, [ecx]\n");
+    }
+
+    /* store variable 1 in eax */
+    if (es_variable_1 == 0)
+        fprintf(fpasm, "pop dword eax\n");
+    else if (es_variable_1 == 1){
+        fprintf(fpasm, "pop dword ecx\n");
+        fprintf(fpasm, "mov dword eax, [ecx]\n");
     }
 
     /* perform operation and store result in stack */
@@ -341,7 +344,7 @@ void no(FILE* fpasm, int es_variable, int cuantos_no) {
     }
 
     fprintf(fpasm,"cmp ebx, 0\n");
-    fprintf(fpasm, "je no_uno_%d", cuantos_no);
+    fprintf(fpasm, "je no_uno_%d\n", cuantos_no);
     /* Si en ebx hay un 1, escribo un 0*/
     fprintf(fpasm, "push dword 0\n");
     fprintf(fpasm, "jmp uno_%d\n", cuantos_no);
@@ -364,20 +367,20 @@ necesarios para implementar las comparaciones.
 void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -396,20 +399,20 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -428,20 +431,20 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -460,20 +463,20 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -492,20 +495,20 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -524,20 +527,20 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
     if (fpasm == NULL) return;
 
-    if (es_variable1 == 1){
-        fprintf(fpasm, "pop dword eax\n");
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-    }
-    else if (es_variable1 == 0){
-        fprintf(fpasm, "pop dword ebx\n");
-    }
-
     if (es_variable2 == 1){
         fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov dword ecx, [eax]\n");
     }
     else if(es_variable2 == 0){
         fprintf(fpasm, "pop dword ecx\n");
+    }
+
+    if (es_variable1 == 1){
+        fprintf(fpasm, "pop dword eax\n");
+        fprintf(fpasm, "mov dword ebx, [eax]\n");
+    }
+    else if (es_variable1 == 0){
+        fprintf(fpasm, "pop dword ebx\n");
     }
 
     fprintf(fpasm, "cmp ebx, ecx\n");
@@ -695,7 +698,7 @@ int tam_max, int exp_es_direccion) {
     
     fprintf(fpasm, "mov dword edx, _%s\n", nombre_vector);
     fprintf(fpasm, "lea eax, [edx + eax*4]\n");
-    fprintf(fpams, "push dword eax\n");
+    fprintf(fpasm, "push dword eax\n");
 }
 /*
 Generación de código para indexar un vector
