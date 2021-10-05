@@ -23,7 +23,7 @@ void escribir_subseccion_data(FILE* fpasm){
 
     fprintf(fpasm, "segment .data\n");
     fprintf(fpasm, "error_div_by_zero db 'Error, division by zero.', 0\n");
-    fprintf(fpasm, "error_out_of_range db 'Error, index out of range.', 0\n");
+    fprintf(fpasm, "error_out_of_range db 'Indice de vector fuera de rango', 0\n");
 }
 /*
 Declaración (con directiva db) de las variables que contienen el texto de los
@@ -616,7 +616,7 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
     }
     
     fprintf(fpasm, "cmp ebx, 0\n");
-    fprintf(fpasm, "je near then_%d", etiqueta);
+    fprintf(fpasm, "je near then_fin_%d\n", etiqueta);
 }
 
 void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
@@ -631,26 +631,26 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
     }
     
     fprintf(fpasm, "cmp ebx, 0\n");
-    fprintf(fpasm, "je near then_%d", etiqueta);
+    fprintf(fpasm, "je near then_fin_%d\n", etiqueta);
 }
 
 void ifthen_fin(FILE * fpasm, int etiqueta) {
     if (fpasm == NULL) return;
 
-    fprintf(fpasm, "then_%d:\n", etiqueta);
+    fprintf(fpasm, "then_fin_%d:\n", etiqueta);
 }
 
 void ifthenelse_fin_then( FILE * fpasm, int etiqueta) {
     if (fpasm == NULL) return;
     
-    fprintf(fpasm, "jmp near then_else_%d\n", etiqueta);
-    fprintf(fpasm, "then_%d:\n", etiqueta);
+    fprintf(fpasm, "jmp near then_else_fin_%d\n", etiqueta);
+    fprintf(fpasm, "then_fin_%d:\n", etiqueta);
 }
 
 void ifthenelse_fin( FILE * fpasm, int etiqueta) {
     if (fpasm == NULL) return;
 
-    fprintf(fpasm, "then_else_%d:\n", etiqueta);
+    fprintf(fpasm, "then_else_fin_%d:\n", etiqueta);
 }
 
 void while_inicio(FILE * fpasm, int etiqueta) {
@@ -688,7 +688,7 @@ int tam_max, int exp_es_direccion) {
     fprintf(fpasm, "pop dword eax\n");
     
     if (exp_es_direccion == 1){
-        fprintf(fpasm, "mov dword eax,[eax]\n");
+        fprintf(fpasm, "mov dword eax, [eax]\n");
     }
     /* Check the range */
     fprintf(fpasm, "cmp eax, 0\n");
@@ -746,14 +746,13 @@ la posición posicion_variable_local (recuerda que ordenadas con origen 1)
 void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
     if (fpasm == NULL) return;
 
-    fprintf(fpasm, "pop dword eax\n");
+    fprintf(fpasm, "pop dword ebx\n");
 
     if (es_variable == 1) {
-        fprintf(fpasm, "mov dword ebx, [eax]\n");
-        fprintf(fpasm, "mov dword eax, ebx\n");        
+        fprintf(fpasm, "mov dword ebx, [ebx]\n");
     }
 
-    fprintf(fpasm, "pop dword ebx\n");
+    fprintf(fpasm, "pop dword eax\n");
     fprintf(fpasm, "mov dword [ebx], eax\n");
 }
 /*

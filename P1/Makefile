@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -Wall
 
-all: example1 example2 example3  example4  example5  example6 
+all: example1 example2 example3  example4 example6 example5 
 
 generacion.o: generacion.h generacion.c
 	$(CC) $(CFLAGS) -c generacion.c
