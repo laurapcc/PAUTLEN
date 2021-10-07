@@ -713,7 +713,13 @@ tarea.
 
 
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
-    
+    if (fd_asm == NULL || nombre_funcion == NULL) return;
+
+    fprintf(fd_asm, "%s:\n", nombre_funcion);
+    fprintf(fd_asm, "push ebp\n");
+    fprintf(fd_asm, "mov ebp, esp\n");
+    fprintf(fd_asm, "sub esp, 4*%d\n", num_var_loc);
+
 }
 /*
 Generación de código para iniciar la declaración de una función.
@@ -722,7 +728,18 @@ Su nombre
 Su número de variables locales
 */
 
-void retornarFuncion(FILE * fd_asm, int es_variable);
+void retornarFuncion(FILE * fd_asm, int es_variable) {
+    if (fd_asm == NULL) return;
+
+    fprintf(fd_asm, "pop eax\n");
+    
+    if (es_variable == 1){
+        fprintf(fd_asm, "mov dword eax, [eax]\n");
+    }
+    fprintf(fd_asm, "mov esp, ebp\n");
+    fprintf(fd_asm, "pop ebp\n");
+    fprintf(fd_asm, "ret\n");
+}
 /*
 Generación de código para el retorno de una función.
 La expresión que se retorna está en la cima de la pila.
@@ -730,14 +747,31 @@ Puede ser una variable (o algo equivalente) en cuyo caso exp_es_direccion vale 1
 Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
 */
 
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
+    if(fpasm == NULL) return;
+
+    int d_ebp;
+    d_ebp = 4 * (1+(num_total_parametros - pos_parametro));
+    
+    fprintf(fpasm, "lea eax, [ebp + %d]\n", d_ebp);
+    fprintf(fpasm, "push dword eax\n");
+}
+
 /*
 Función para dejar en la cima de la pila la dirección efectiva del parámetro que ocupa la
 posición pos_parametro (recuerda que los parámetros se ordenan con origen 0) de un total
 de num_total_parametros
 */
 
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local) {
+    if(fpasm == NULL) return;
+
+    int d_ebp;
+    d_ebp = 4 * posicion_variable_local;
+    
+    fprintf(fpasm, "lea eax, [ebp - %d]\n", d_ebp);
+    fprintf(fpasm, "push dword eax\n");
+}
 /*
 Función para dejar en la cima de la pila la dirección efectiva de la variable local que ocupa
 la posición posicion_variable_local (recuerda que ordenadas con origen 1)
@@ -769,7 +803,15 @@ Es 1 si la expresión que se va a asignar es algo asimilable a una variable
 Es 0 en caso contrario (constante u otro tipo de expresión)
 */
 
-void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
+void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable){
+    if (fd_asm == NULL) return;
+
+    if (es_variable == 1){
+        fprintf(fd_asm, "pop eax\n");
+        fprintf(fd_asm, "mov eax, [eax]\n");
+        fprintf(fd_asm, "push dword eax\n");
+    }
+}
 /*
 Como habrás visto en el material, nuestro convenio de llamadas a las funciones asume que
 los argumentos se pasan por valor, esto significa que siempre se dejan en la pila “valores” y
@@ -778,7 +820,13 @@ Esta función realiza la tarea de dado un operando escrito en la pila y sabiendo
 o no (es_variable) se deja en la pila el valor correspondiente
 */
 
-void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
+    if (fd_asm == NULL || nombre_funcion == NULL) return;
+
+    fprintf(fd_asm, "call %s\n", nombre_funcion);
+    limpiarPila(fd_asm, num_argumentos);
+    fprintf(fd_asm, "push dword eax\n");
+}
 /*
 Esta función genera código para llamar a la función nombre_funcion asumiendo que los
 argumentos están en la pila en el orden fijado en el material de la asignatura.
@@ -787,8 +835,12 @@ argumentos
 Para limpiar la pila puede utilizar la función de nombre limpiarPila
 */
 
-void limpiarPila(FILE * fd_asm, int num_argumentos);
-/*
+void limpiarPila(FILE * fd_asm, int num_argumentos) {
+    if (fd_asm == NULL) return;
+
+    fprintf(fd_asm, "add esp, %d\n", num_argumentos*4);
+}
+/*  
 Genera código para limpiar la pila tras invocar una función
 Esta función es necesaria para completar la llamada a métodos, su gestión dificulta el
 conocimiento por parte de la función de llamada del número de argumentos que hay en la
