@@ -781,12 +781,12 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "pop dword ebx\n");
+    fprintf(fpasm, "pop dword eax\n");
 
     if (es_variable == 1) {
-        fprintf(fpasm, "mov dword ebx, [ebx]\n");
+        fprintf(fpasm, "mov dword eax, [eax]\n");
     }
 
-    fprintf(fpasm, "pop dword eax\n");
     fprintf(fpasm, "mov dword [ebx], eax\n");
 }
 /*
