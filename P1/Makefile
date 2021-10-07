@@ -77,7 +77,7 @@ clean:
 	rm -rf example4 ex4 example4.o ex4.o
 	rm -rf example5 ex5 example5.o ex5.o
 	rm -rf example6 ex6 example6.o ex6.o
-	rm -rf example6 ex6 example7.o ex7.o
+	rm -rf example7 ex7 example7.o ex7.o
 
 
 
