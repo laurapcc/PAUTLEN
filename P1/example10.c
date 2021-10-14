@@ -22,9 +22,6 @@ int main (int argc, char ** argv) {
     //int m;
     declarar_variable(fd_asm,"m", 1, 1);
     
-    //int n;
-    declarar_variable(fd_asm,"n", 1, 1);
-    
     //int [4] v;
     declarar_variable(fd_asm, "v", 1, 4);
     escribir_segmento_codigo(fd_asm);
@@ -33,10 +30,6 @@ int main (int argc, char ** argv) {
     //m=0;
     escribir_operando(fd_asm,"0",0);
     asignar(fd_asm,"m",0);
-    
-    //n=0;
-    escribir_operando(fd_asm,"0",0);
-    asignar(fd_asm,"n",0);
     
     //While. Gestion inicial de las etiquetas, guardado de etiqueta.
     getiqueta++;
@@ -62,57 +55,58 @@ int main (int argc, char ** argv) {
 
 
 
-
-
-
-
-    // while anidado
-
-    
-    //n=0;
-    escribir_operando(fd_asm,"0",0);
-    asignar(fd_asm,"n",0);
-    
-    //While. Gestion inicial de las etiquetas, guardado de etiqueta.
+    //Gestion de etiquetas para abrir el ambito del if. Esta sera la etiqueta que tenga.
     getiqueta++;
-    cima_etiquetas++;
-    etiquetas[cima_etiquetas]=getiqueta;
+    cima_etiquetas++; 
+    etiquetas[cima_etiquetas]=getiqueta; 
+    etiqueta = getiqueta;
     
-    //Inicio del while. Impresion de la etiqueta.
-    etiqueta = etiquetas[cima_etiquetas];
-    while_inicio(fd_asm, etiqueta);
+    //Condición del if. Salto a fin si, si la condicion se da. 
+    escribir_operando(fd_asm,"m",1); 
+    escribir_operando(fd_asm,"1",0); 
+    mayor(fd_asm,1,0,etiqueta); 
+    ifthenelse_inicio(fd_asm, 0, etiqueta);
     
-    //Condicion del bucle while.
-    escribir_operando(fd_asm,"n",1);
-    escribir_operando(fd_asm,"3",0);
-    menor_igual(fd_asm,1,0,etiqueta);
+    //printf 2 
+    escribir_operando(fd_asm,"2",0); 
+    escribir(fd_asm,0,ENTERO);
     
-    //Recuperamos la etiqueta para imprimir la comparacion del while.
-    etiqueta = etiquetas[cima_etiquetas];
-    while_exp_pila(fd_asm, 0, etiqueta);
+    //Salto a fin sino al terminar el if, impresion de la etiqueta fin_si. Recogemos la etiqueta.
+    etiqueta = etiquetas[cima_etiquetas]; 
+    ifthenelse_fin_then(fd_asm, etiqueta);
     
-    //printf n
-    escribir_operando(fd_asm,"n",1);
-    escribir(fd_asm,1,ENTERO);
+    //printf 3 
+    escribir_operando(fd_asm,"3",0); 
+    escribir(fd_asm,0,ENTERO);
     
-    //n = n + 1
-    escribir_operando(fd_asm,"n",1);
-    escribir_operando(fd_asm,"1",0);
-    sumar(fd_asm,1,0);
-    asignar(fd_asm,"n",0);
-    
-    //Recuperamos la etiqueta para imprimir el fin de etiqueta del while.
-    etiqueta = etiquetas[cima_etiquetas];
-    while_fin(fd_asm, etiqueta);
+    //Fin del condicional if. Imprimimos la etiqueta de ambito del fin del condicional y restamos el contador.
+    etiqueta = etiquetas[cima_etiquetas]; 
+    ifthenelse_fin(fd_asm, etiqueta); 
     cima_etiquetas--;
+
+
+
+
+
+    
+
+
+    //printf 2 
+    escribir_operando(fd_asm,"321",0); 
+    escribir(fd_asm,0,ENTERO);
+    
+    //v[m] = m*10;
+    escribir_operando(fd_asm,"m",1);
+    escribir_operando(fd_asm,"10",0);
+    multiplicar(fd_asm,1,0);
+    escribir_operando(fd_asm,"m",1);
+    escribir_elemento_vector(fd_asm,"v", 4, 1);
+    asignarDestinoEnPila(fd_asm,0);
     
 
 
 
 
-
-
-    
     //m = m + 1
     escribir_operando(fd_asm,"m",1);
     escribir_operando(fd_asm,"1",0);

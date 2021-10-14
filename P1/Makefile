@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -Wall
 
-all: example1 example2 example3 example4 example6 example5 example7 example8 example9
+all: example1 example2 example3 example4 example6 example5 example7 example8 example9 example10
 
 generacion.o: generacion.h generacion.c
 	$(CC) $(CFLAGS) -c generacion.c
@@ -87,6 +87,15 @@ example9: example9.o generacion.o
 	nasm -g -o ex9.o -f elf32 ex9.asm
 	gcc -Wall -g -m32 -o ex9 ex9.o alfalib.o
 
+example10.o: example10.c generacion.h generacion.c
+	$(CC) $(CFLAGS) -c example10.c
+
+example10: example10.o generacion.o
+	$(CC) $(CFLAGS) -o $@  $^
+	./example10 ex10.asm
+	nasm -g -o ex10.o -f elf32 ex10.asm
+	gcc -Wall -g -m32 -o ex10 ex10.o alfalib.o
+
 clean:
 	rm -rf *.asm generacion.o 
 	rm -rf example1 ex1 example1.o ex1.o
@@ -98,6 +107,7 @@ clean:
 	rm -rf example7 ex7 example7.o ex7.o
 	rm -rf example8 ex8 example8.o ex8.o
 	rm -rf example9 ex9 example9.o ex9.o
+	rm -rf example10 ex10 example10.o ex10.o
 
 
 
