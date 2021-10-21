@@ -1,31 +1,49 @@
 #include <stdio.h>
+#include <string.h>
 #include "tokens.h"
 
+#define getVariableName(x) #x
+
+int yylex();
+
 int main (int argc, char** argv){
-    FILE *input = NULL, *output = NULL;
+    int tok;
+    extern char *yytext;
+    extern int yyleng;
+    extern FILE *yyin;
+    extern FILE *yyout;
 
     if (argc != 3){
         printf("Error, pocos argumentos.\n");
         return -1;       
     } 
 
-    input = fopen(argv[1], "r");
-    if (input == NULL) {
+    yyin = fopen(argv[1], "r");
+    if (yyin == NULL) {
         printf("Error when openning the input file.\n");
         return -1;
     }
     
-    output = fopen(argv[2], "w");
-    if (output == NULL){
+    yyout = fopen(argv[2], "w");
+    if (yyout == NULL){
         printf("Error while opening output file.\n");
         return -1;
     }
 
-    while (yylex(input) != 0){
-        fprintf(output, yylex(input));
+    while ((tok = yylex(yyin)) > 0){
+        fprintf(yyout, "%s %d %s\n", getVariableName(tok), tok, yytext);
     }
 
-    printf("%d", TOK_MAIN);
+    if (tok == -1){
+        if (yyleng > 100){
+            fprintf(stderr, "Failed. Max length of variable exceeded");
+            return -1;
+        }
+        fprintf(stderr, "Failed due to other reasons.");
+        return -1;
+    }
+
+    //printf("%s = %d\n",getVariableName(TOK_MAIN),TOK_MAIN);
 
     return 0;
 }
