@@ -1,4 +1,4 @@
-// Programa que eleva un numero al cuadrado
+// Programa que  eleva un numero al cuadrado
 
 main {
   int x, resultado;

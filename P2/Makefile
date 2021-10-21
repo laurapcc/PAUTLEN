@@ -5,16 +5,17 @@ prueba:
 	gcc -o pruebamorpho lex.yy.o pruebamorpho.o
 
 test1:
-	pruebamorpho input1.txt output1.txt
+	./pruebamorpho entrada1.txt output1.txt
 
 test2:
-	pruebamorpho input2.txt output2.txt
+	./pruebamorpho entrada2.txt output2.txt
 
 compare1:
-	diff –Bb input1.txt ficheros\ de\ prueba/salida1.txt
+	diff -b output1.txt salida1.txt
 
 compare2:
-	diff –Bb input2.txt ficheros\ de\ prueba/salida2.txt
+	diff -b output2.txt salida2.txt
 
 clean: 
 	rm -rf *.o pruebamorpho
+	rm -rf output1.txt output2.txt
