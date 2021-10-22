@@ -120,10 +120,10 @@ int main (int argc, char** argv){
 
     if (tok == -1){
         if (yyleng > 100){
-            fprintf(stderr, "Failed in [line %d, column %d] Max length of variable exceeded (%s)", yline, ycol, yytext);
+            fprintf(stderr, "Error en [line %d, column %d]: identificador demasiado largo (%s)\n", yline, ycol, yytext);
             return -1;
         }
-        fprintf(stderr, "Failed due to other reasons.");
+        fprintf(stderr, "Error en [line %d, column %d], por razones desconocidas.\n", yline, ycol);
         return -1;
     }
 
