@@ -1,14 +1,11 @@
 %{
 #include <stdio.h>
 extern FILE * yyout;
-extern int yylex();
+int yylex();
+void yyerror(const char *s);
 
 %}
 
-%union {
-    char* string;
-    int number;
-}
 
 %token TOK_MAIN
 %token TOK_INT
@@ -45,19 +42,21 @@ extern int yylex();
 %token TOK_MENOR
 %token TOK_MAYOR
 
-%token <string> TOK_IDENTIFICADOR
+%token TOK_IDENTIFICADOR
 
-%token <number> TOK_CONSTANTE_ENTERA
+%token TOK_CONSTANTE_ENTERA
 %token TOK_TRUE
 %token TOK_FALSE
 
-%left TOK_MAS TOK_MENOS
-%left TOK_ASTERISCO TOK_DIVISION
-%left TOK_NOT
+%token TOK_ERROR
+
+%left TOK_MAS TOK_MENOS TOK_OR
+%left TOK_ASTERISCO TOK_DIVISION TOK_AND
+%right TOK_NOT
 
 %%
 
-programa:                   TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA
+programa:                   TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA 
                             {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
                             ;
 declaraciones:              declaracion 
@@ -86,34 +85,42 @@ clase_vector:               TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_enter
                             ;
 identificadores:            identificador
                             {fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n");}
-                            | identificador TOK_COMA identificador 
-                            {fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificador>\n");}
+                            | identificador TOK_COMA identificadores 
+                            {fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");}
                             ;
 funciones:                  funcion funciones
                             {fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
+                            | 
+                            {fprintf(yyout, ";R21:\t<funciones> ::= \n");}
                             ;
 funcion:                    TOK_FUNCTION tipo identificadores TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
                             {fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");}
                             ;
 parametros_funcion:         parametro_funcion resto_parametros_funcion
                             {fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");}
+                            | 
+                            {fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n");}
                             ;
 resto_parametros_funcion:   TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion
                             {fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n");}
+                            | 
+                            {fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n");}
                             ;
 parametro_funcion:          tipo identificador
                             {fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n");}
                             ;
 declaraciones_funcion:      declaraciones
                             {fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n");}
+                            |  
+                            {fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n");}
                             ;
 sentencias:                 sentencia
                             {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");}
                             | sentencia sentencias
                             {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");}
                             ;
-sentencia:                  sentencia_simple
-                            {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple>\n");}
+sentencia:                  sentencia_simple TOK_PUNTOYCOMA
+                            {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
                             | bloque
                             {fprintf(yyout, ";R33:\t<sentencia> ::= <bloque>\n");}
                             ;
@@ -151,7 +158,7 @@ lectura:                    TOK_SCANF identificador
                             {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");}
                             ;
 escritura:                  TOK_PRINTF exp
-                            {fprintf(yyout, ";R56:\t<escritura> ::= printf <identificador>\n");}
+                            {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");}
                             ;
 retorno_funcion:            TOK_RETURN exp
                             {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
@@ -187,7 +194,7 @@ exp:                        exp TOK_MAS exp
                             ;
 lista_expresiones:          exp resto_lista_expresiones
                             {fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
-                            |
+                            | 
                             {fprintf(yyout, ";R90:\t<lista_expresiones> ::=\n");}
                             ;
 resto_lista_expresiones:    TOK_COMA exp resto_lista_expresiones
@@ -218,19 +225,25 @@ constante_logica:           TOK_TRUE
                             | TOK_FALSE
                             {fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");}
                             ;
-constante_entera:           numero
-                            {fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n");}
-                            ;
-numero:                     digito
-                            {fprintf(yyout, ";R105:\t<numero> ::= <digito>\n");}
-                            | numero digito
-                            {fprintf(yyout, ";R106:\t<numero> ::= <numero> <digito>\n");}
+constante_entera:           TOK_CONSTANTE_ENTERA
+                            {fprintf(yyout, ";R104:\t<contante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
                             ;
 identificador:              TOK_IDENTIFICADOR
                             {fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
                             ;
-digito:                     TOK_CONSTANTE_ENTERA
-                            {fprintf(yyout, ";R115:\t<digito> ::= TOK_CONSTANTE_ENTERA\n");}
-                            ;
 %%
 
+void yyerror(const char *s){
+    extern int yline;
+    extern int ycol;
+    extern int err_morf;
+    extern int yyleng;
+
+    if(!err_morf){
+        printf("ERROR IN LINE %d COLUMN %d\n", yline, ycol);
+        return;
+    }
+
+    err_morf = 0;
+    return;
+}

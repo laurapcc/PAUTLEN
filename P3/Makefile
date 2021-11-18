@@ -1,21 +1,45 @@
-prueba:
-	flex alfa.l
-	gcc -c -o lex.yy.o lex.yy.c
-	gcc -Wall -ansi -pedantic -c -o pruebamorpho.o pruebamorpho.c
-	gcc -o pruebamorpho lex.yy.o pruebamorpho.o
+CC=gcc
+CFLAGS=-Wall
+
+all: pruebaSintactico
+
+pruebaSintactico: pruebaSintactico.c lex.yy.o y.tab.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+lex.yy.o: lex.yy.c
+	$(CC) $(CFLAGS) -c $^
+
+y.tab.o: y.tab.c
+	$(CC) $(CFLAGS) -c $<
+
+lex.yy.c: alfa.l y.tab.h
+	flex $<
+
+y.tab.c: alfa.y
+	bison -d -y $^
+
+y.tab.h: alfa.y
+	bison -d -y -v $^
 
 test1:
-	./pruebamorpho entrada1.txt output1.txt
+	./pruebaSintactico entrada_sin_1.txt output_sin_1.txt
 
 test2:
-	./pruebamorpho entrada2.txt output2.txt
+	./pruebaSintactico entrada_sin_2.txt output_sin_2.txt
+
+test3:
+	./pruebaSintactico entrada_sin_3.txt output_sin_3.txt
 
 compare1:
-	diff -b output1.txt salida1.txt
+	diff -b output_sin_1.txt salida_sin_1.txt
 
 compare2:
-	diff -b output2.txt salida2.txt
+	diff -b output_sin_2.txt salida_sin_2.txt
+
+compare3:
+	diff -b output_sin_3.txt salida_sin_3.txt
 
 clean: 
-	rm -rf *.o pruebamorpho
-	rm -rf output1.txt output2.txt
+	rm -rf *.o pruebaSintactico
+	rm -rf output_sin_1.txt output_sin_2.txt output_sin_3.txt
+	rm -rf y.output y.tab.c y.tab.h lex.yy.c
