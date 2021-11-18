@@ -63,14 +63,14 @@ true { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_TRUE; }
 false { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_FALSE; }
 
 
-{LETTER}({DIGIT}|{LETTER}){100,} { printf("ERROR IN LINE %d COLUMN %d, LINE TOO LONG\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
+{LETTER}({DIGIT}|{LETTER}){100,} { printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
 
 {DIGIT}+ { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
 {LETTER}({DIGIT}|{LETTER}){0,99} { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR; }
 
 
 
-[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("ERROR IN LINE %d COLUMN %d, SIMBOL NOT PERMITTED\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
+[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
 
 %%
 
