@@ -81,7 +81,8 @@ void deleteTable(hash_table* table) {
     free(table);
 }
 
-/* Auxiliary function to search for a symbol in a table */
+/* Auxiliary function to search for a symbol in a table.
+If symbol is found, return its type. */
 int search_symbol(symbol** table, char* id) { 
 
     symbol* sym;
@@ -93,7 +94,7 @@ int search_symbol(symbol** table, char* id) {
         /* Symbol not found */
         return -1;
     }
-    return 0;
+    return sym -> type;
 }
 
 /* Auxiliary function to insert in the table a symbol */
@@ -128,6 +129,7 @@ int insert_symbol(symbol** table, char* id, int value) {
     return 0;
 }
 
+
 int addElement(hash_table* table, char* id, int value) {
 
     /* If a local table exists, we insert the element there. If not, we insert
@@ -135,7 +137,74 @@ int addElement(hash_table* table, char* id, int value) {
     if (table -> exists_local) {
         return insert_symbol(table -> local_table, id, value);
     }
-    else{
+    else {
         return insert_symbol(table -> global_table, id, value);
     }
+}
+
+int searchElement(hash_table* table, char* id) {
+
+    int type;
+
+    /* If a local table exists, we search for the element there. If not, we search for
+    it in the global table */
+    if (table -> exists_local) {
+        type = search_symbol(table -> local_table, id);
+
+        /* If the element doesn't exist in the local table, we look for it in the global. */
+        if (type == -1) {
+            return search_symbol(table ->global_table, id);
+        }
+        else {
+            return type;
+        }
+    }
+    else {
+        return search_symbol(table -> global_table, id);
+    }
+}
+
+int openScope(hash_table* table, char* id, int value) {
+
+    /* Searh for the element in the global table, if it exists, error. */
+    if (search_symbol(table -> global_table, id) != -1){
+        printf("Error, function %s already exists.\n", id);
+        return -1;
+    }
+
+    /* Insert the element in the global table. */
+    if (insert_symbol(table -> global_table, id, value) == -1) {
+        printf("Error while opening scope for function %s: insertion in global table failed.\n", id);
+        return -1;
+    }
+
+    /* Initialize local table. */
+    if (insert_symbol(table -> local_table, id, value) == -1) {
+        printf("Error while opening scope for function %s: insertion in local table failed.\n", id);
+        return -1;
+    }
+    table -> exists_local = 1;
+    return 0;
+}
+
+int closeScope(hash_table* table) {
+
+    symbol *sym, *table_sym;
+
+    /* If no local table exist, error. */
+    if (!table -> exists_local) {
+        printf("Error while closing scope, no active local tables.\n");
+        return -1;
+    }
+
+    /* Iter through the elements of the table deleting them. */
+    HASH_ITER(hh, table -> local_table, sym, table_sym) {
+        HASH_DEL(table -> local_table, sym);
+        free(sym -> id);
+        free(sym);
+    }
+
+    free(table -> local_table);
+    table -> exists_local = 0;
+    return 0;
 }
