@@ -190,6 +190,7 @@ int openScope(hash_table* table, char* id, int value) {
 int closeScope(hash_table* table) {
 
     symbol *sym, *table_sym;
+    int i = 0;
 
     /* If no local table exist, error. */
     if (!table -> exists_local) {
@@ -200,8 +201,13 @@ int closeScope(hash_table* table) {
     /* Iter through the elements of the table deleting them. */
     HASH_ITER(hh, table -> local_table, sym, table_sym) {
         HASH_DEL(table -> local_table, sym);
-        free(sym -> id);
-        free(sym);
+        if (i != 0) {
+            free(sym -> id);
+            free(sym);
+        }
+        else {
+            i++;
+        }
     }
 
     free(table -> local_table);
