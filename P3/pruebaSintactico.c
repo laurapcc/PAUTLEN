@@ -26,11 +26,10 @@ int main (int argc, char** argv){
     }
 
 
-    int ret_value = yyparse();
-    //printf("Value returned by yyparse: %d\n", ret_value);
+    yyparse();
     
     fclose(yyin);
     fclose(yyout);
 
-    return ret_value;
+    return 0;
 }

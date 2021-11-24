@@ -240,7 +240,7 @@ void yyerror(const char *s){
     extern int yyleng;
 
     if(!err_morf){
-        printf("****Error sintactico en [lin %d, col %d]", yline, ycol);
+        printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol);
         return;
     }
 
