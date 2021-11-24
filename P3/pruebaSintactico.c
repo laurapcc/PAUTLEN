@@ -27,7 +27,7 @@ int main (int argc, char** argv){
 
 
     int ret_value = yyparse();
-    printf("Value returned by yyparse: %d\n", ret_value);
+    //printf("Value returned by yyparse: %d\n", ret_value);
     
     fclose(yyin);
     fclose(yyout);
