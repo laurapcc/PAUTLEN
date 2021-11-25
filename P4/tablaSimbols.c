@@ -3,7 +3,7 @@
 typedef struct _symbol {
     char *id;
     int type;
-    UT_hash_handle hash_handle;
+    UT_hash_handle hh;
 } symbol;
 
 typedef struct _hash_table {
@@ -31,7 +31,7 @@ hash_table * createTable(void) {
 
     if (table -> global_table == NULL) {
         free(table);
-        print("Error allocating memory for global table.\n");
+        printf("Error allocating memory for global table.\n");
         return NULL;
     }
 
@@ -92,7 +92,7 @@ int search_symbol(symbol** table, char* id) {
     
     if (sym == NULL){
         /* Symbol not found */
-        return -1;
+        return FAILURE;
     }
     return sym -> type;
 }
@@ -104,29 +104,29 @@ int insert_symbol(symbol** table, char* id, int value) {
 
     /* If the symbol already exists in the table: error */
     if (search_symbol(table, id) != -1){
-        return -1;
+        return FAILURE;
     }
 
     /* Allocate memory for the new symbol */
     new_sym = (symbol*)malloc(sizeof(symbol));
     if (new_sym == NULL) {
         printf("Error when allocating memory for new symbol %s.\n", id);
-        return -1;
+        return ERROR_MEM;
     }
 
     new_sym -> id = (char*)malloc(sizeof(char)*(strlen(id) + 1));
     if (new_sym -> id == NULL) {
         free(new_sym);
         printf("Error when allocating memory for new symbol %s.\n", id);
-        return -1;
+        return ERROR_MEM;
     }
 
-    strcpy(new_sym -> id, id);;
+    strcpy(new_sym -> id, id);
     new_sym -> type = value;
 
     HASH_ADD_STR(*table, id, new_sym);
 
-    return 0;
+    return OK;
 }
 
 
@@ -169,22 +169,22 @@ int openScope(hash_table* table, char* id, int value) {
     /* Searh for the element in the global table, if it exists, error. */
     if (search_symbol(table -> global_table, id) != -1){
         printf("Error, function %s already exists.\n", id);
-        return -1;
+        return FAILURE;
     }
 
     /* Insert the element in the global table. */
     if (insert_symbol(table -> global_table, id, value) == -1) {
         printf("Error while opening scope for function %s: insertion in global table failed.\n", id);
-        return -1;
+        return FAILURE;
     }
 
     /* Initialize local table. */
     if (insert_symbol(table -> local_table, id, value) == -1) {
         printf("Error while opening scope for function %s: insertion in local table failed.\n", id);
-        return -1;
+        return FAILURE;
     }
     table -> exists_local = 1;
-    return 0;
+    return OK;
 }
 
 int closeScope(hash_table* table) {
@@ -195,7 +195,7 @@ int closeScope(hash_table* table) {
     /* If no local table exist, error. */
     if (!table -> exists_local) {
         printf("Error while closing scope, no active local tables.\n");
-        return -1;
+        return FAILURE;
     }
 
     /* Iter through the elements of the table deleting them. */
@@ -212,5 +212,5 @@ int closeScope(hash_table* table) {
 
     free(table -> local_table);
     table -> exists_local = 0;
-    return 0;
+    return OK;
 }
