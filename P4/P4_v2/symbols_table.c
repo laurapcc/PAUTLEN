@@ -1,17 +1,6 @@
 #include "symbols_table.h"
 #include "hash.c"
 
-typedef struct _symbol {
-    char id[MAX_ID_LENGTH];
-    int type;
-} symbol;
-
-typedef struct _hash_table {
-    Hash_Table *global_table;
-    Hash_Table *local_table;
-    int exists_local;
-} symbols_table;
-
 
 
 /* Deletes a symbols table. */
