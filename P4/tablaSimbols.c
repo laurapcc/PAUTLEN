@@ -62,15 +62,15 @@ void deleteTable(hash_table* table) {
     /* Delete global table */
 
     /* Iter through the symbols of the table and delete them */
-    HASH_ITER(hh, table -> global_table, sym, table_sym) {
-        HASH_DEL(table -> global_table, sym);
+    HASH_ITER(hh, *(table -> global_table), sym, table_sym) {
+        HASH_DEL(*(table -> global_table), sym);
         free(sym -> id);
         free(sym);
     }
 
     /* Delete local table */
-    HASH_ITER(hh, table -> local_table, sym, table_sym) {
-        HASH_DEL(table -> local_table, sym);
+    HASH_ITER(hh, *(table -> local_table), sym, table_sym) {
+        HASH_DEL(*(table -> local_table), sym);
         free(sym -> id);
         free(sym);
     }
@@ -152,7 +152,7 @@ int searchElement(hash_table* table, char* id) {
         type = search_symbol(table -> local_table, id);
 
         /* If the element doesn't exist in the local table, we look for it in the global. */
-        if (type == -1) {
+        if (type == FAILURE) {
             return search_symbol(table ->global_table, id);
         }
         else {
@@ -167,19 +167,19 @@ int searchElement(hash_table* table, char* id) {
 int openScope(hash_table* table, char* id, int value) {
 
     /* Searh for the element in the global table, if it exists, error. */
-    if (search_symbol(table -> global_table, id) != -1){
+    if (search_symbol(table -> global_table, id) != FAILURE){
         printf("Error, function %s already exists.\n", id);
         return FAILURE;
     }
 
     /* Insert the element in the global table. */
-    if (insert_symbol(table -> global_table, id, value) == -1) {
+    if (insert_symbol(table -> global_table, id, value) == FAILURE) {
         printf("Error while opening scope for function %s: insertion in global table failed.\n", id);
         return FAILURE;
     }
 
     /* Initialize local table. */
-    if (insert_symbol(table -> local_table, id, value) == -1) {
+    if (insert_symbol(table -> local_table, id, value) == FAILURE) {
         printf("Error while opening scope for function %s: insertion in local table failed.\n", id);
         return FAILURE;
     }
@@ -199,8 +199,8 @@ int closeScope(hash_table* table) {
     }
 
     /* Iter through the elements of the table deleting them. */
-    HASH_ITER(hh, table -> local_table, sym, table_sym) {
-        HASH_DEL(table -> local_table, sym);
+    HASH_ITER(hh, *(table -> local_table), sym, table_sym) {
+        HASH_DEL(*(table -> local_table), sym);
         if (i != 0) {
             free(sym -> id);
             free(sym);
