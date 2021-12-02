@@ -70,7 +70,7 @@ false { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_FALSE; }
 
 
 
-[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("****Error morfologico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
+[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("****Error morfologico en [lin %d, col %d]: simbolo no permitido (%s)\n", yline, ycol, yytext); err_morf = 1; return TOK_ERROR; }
 
 %%
 
