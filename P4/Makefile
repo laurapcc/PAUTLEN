@@ -1,23 +1,11 @@
-########################################################
-CC=gcc
-CFLAGS= -g -Wall
-########################################################
-
-
-all: main
-
-main: tablaSimbols.o
-	$(CC) $(CFLAGS) -o main tablaSimbols.o main.c
-
-tablaSimbols.o: tablaSimbols.c tablaSimbols.h
-	$(CC) $(CFLAGS) -c -o tablaSimbols.o tablaSimbols.c
-
-test:
-	./main entrada.txt output.txt
-
+run: 
+	gcc -c tablaSimbolos.c
+	gcc -c symbols_table.c
+	gcc tablaSimbolos.o symbols_table.o -o tablaSimbolos
+	./tablaSimbolos entrada.txt mi_salida.txt 
 compare: 
-	diff -b output.txt expected_output.txt
+	diff -bB salida.txt mi_salida.txt 
 
 clean:
-	rm -rf *.o main output.txt
+	rm -rf *.o tablaSimbolos mi_salida.txt
 
