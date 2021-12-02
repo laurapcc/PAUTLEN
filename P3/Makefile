@@ -30,6 +30,9 @@ test2:
 test3:
 	./pruebaSintactico entrada_sin_3.txt output_sin_3.txt
 
+test4:
+	./pruebaSintactico entrada_sin_4.txt output_sin_4.txt
+
 compare1:
 	diff -b output_sin_1.txt salida_sin_1.txt
 
@@ -41,5 +44,5 @@ compare3:
 
 clean: 
 	rm -rf *.o pruebaSintactico
-	rm -rf output_sin_1.txt output_sin_2.txt output_sin_3.txt
+	rm -rf output_sin_1.txt output_sin_2.txt output_sin_3.txt output_sin_4.txt
 	rm -rf y.output y.tab.c y.tab.h lex.yy.c

@@ -151,7 +151,7 @@ condicional:                TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDER
                             | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
                             {fprintf(yyout, ";R51:\t<condicional> ::= if (<exp>) {<sentencias>} else {<sentencias>}\n");}
                             ;
-bucle:                      TOK_WHILE TOK_PARENTESISDERECHO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+bucle:                      TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
                             {fprintf(yyout, ";R52:\t<bucle> ::= while (<exp>) {<sentencias>}\n");}
                             ;
 lectura:                    TOK_SCANF identificador
@@ -190,7 +190,7 @@ exp:                        exp TOK_MAS exp
                             | elemento_vector
                             {fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");}
                             | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO 
-                            {fprintf(yyout, ";R88:\t<identificador> ::= ( <lista_expresiones> )\n");}
+                            {fprintf(yyout, ";R88:\t<exp> ::= <identificador>( <lista_expresiones> )\n");}
                             ;
 lista_expresiones:          exp resto_lista_expresiones
                             {fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}

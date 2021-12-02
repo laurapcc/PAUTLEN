@@ -63,14 +63,14 @@ true { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_TRUE; }
 false { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_FALSE; }
 
 
-{LETTER}({DIGIT}|{LETTER}){100,} { printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
+{LETTER}({DIGIT}|{LETTER}){100,} { printf("****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", yline, ycol, yytext); err_morf = 1; return TOK_ERROR; }
 
 {DIGIT}+ { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
 {LETTER}({DIGIT}|{LETTER}){0,99} { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR; }
 
 
 
-[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
+[^({LETTER}(({DIGIT}|{LETTER}){0,99}))] { printf("****Error morfologico en [lin %d, col %d]\n", yline, ycol); err_morf = 1; return TOK_ERROR; }
 
 %%
 
