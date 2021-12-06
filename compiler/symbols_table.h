@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stddef.h>
 #include "hash.h"
+#include "alfa.h"
 
 #define NOT_FOUND -1
 #define ERROR -1
@@ -14,14 +15,20 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_ID_LENGTH 128
-
+#define MAX_ID_LENGTH 100
 
 
 typedef struct _symbol {
-    char id[MAX_ID_LENGTH];
-    int type;
+    char id[MAX_ID_LENGTH+1];
+    int category; /* VARIABLE PARAMETRO or FUNCION */
+    int type; /* INT or BOOLEAN */
+    int size; /* number of elements in a vector */
+    int num_locals; /* number of local variables */
+    int pos_local; /* position of local variable */
+    int num_params; /* number of parameters */
+    int pos_param; /* position of parameter */
 } symbol;
+
 
 typedef struct _hash_table {
     Hash_Table *global_table;

@@ -1,13 +1,37 @@
 %{
 #include <stdio.h>
 #include "generacion.h"
+#include "symbols_table.h"
+#include "alfa.h"
+
 extern FILE * yyout;
+extern int yline;
+extern int ycol;
+extern int err_morf;
+extern int yyleng;
+
 int yylex();
 void yyerror(const char *s);
 
+symbols_table *table = NULL;
+
+/** GLOBAL VARIABLES **/
+int tipo_actual; /* INT or BOOLEAN */
+int clase_actual; /* ESCALAR or VECTOR */
+int tamanio_vector_actual;
+int pos_variable_local_actual; /* para propagar la posicion de una variable local en declaraciones correspondientes a variables locales */
+
+
 %}
 
+%union {
+    tipo_atributos atributos;
+}
 
+%token <atributos> TOK_IDENTIFICADOR
+%token <atributos> TOK_CONSTANTE_ENTERA
+
+/* Tokens sin valor semantico */
 %token TOK_MAIN
 %token TOK_INT
 %token TOK_BOOLEAN
@@ -43,13 +67,18 @@ void yyerror(const char *s);
 %token TOK_MENOR
 %token TOK_MAYOR
 
-%token TOK_IDENTIFICADOR
-
-%token TOK_CONSTANTE_ENTERA
 %token TOK_TRUE
 %token TOK_FALSE
 
 %token TOK_ERROR
+
+/* No terminales con atributos semanticos */
+%type <atributos> exp
+%type <atributos> comparacion
+%type <atributos> constante_entera
+%type <atributos> constante_logica
+%type <atributos> identificador
+
 
 %left TOK_MAS TOK_MENOS TOK_OR
 %left TOK_ASTERISCO TOK_DIVISION TOK_AND
@@ -57,9 +86,18 @@ void yyerror(const char *s);
 
 %%
 
-programa:                   TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA 
+programa:                   inicioTabla TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA 
                             {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
                             ;
+
+inicioTabla: {
+    table = create_table();
+    if (table == NULL) {
+        fprintf(stderr, "ERRROR: Error when creating the table.\n");
+        return ERROR;
+    }
+}
+    
 declaraciones:              declaracion 
                             {fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
                             | declaracion declaraciones 
@@ -69,20 +107,34 @@ declaracion:                clase identificadores TOK_PUNTOYCOMA
                             {fprintf(yyout, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
                             ;
 clase:                      clase_escalar
-                            {fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");}
+                            {
+                                clase_actual = ESCALAR;
+                                fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");}
                             | clase_vector
-                            {fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");}
+                            {
+                                clase_actual = VECTOR;
+                                fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");}
                             ;
 clase_escalar:              tipo
                             {fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n");}
                             ;
 tipo:                       TOK_INT
-                            {fprintf(yyout, ";R10:\t<tipo> ::= int\n");}
+                            {
+                                tipo_actual = INT;
+                                fprintf(yyout, ";R10:\t<tipo> ::= int\n");}
                             | TOK_BOOLEAN
-                            {fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");}
+                            {
+                                tipo_actual = BOOLEAN;
+                                fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");}
                             ;
 clase_vector:               TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO
-                            {fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");}
+                            {
+                                tamanio_vector_actual = $4.valor_entero;
+                                if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
+                                    fprintf("****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
+                                    return ERROR;
+                                }
+                                fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");}
                             ;
 identificadores:            identificador
                             {fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n");}
@@ -94,8 +146,21 @@ funciones:                  funcion funciones
                             | 
                             {fprintf(yyout, ";R21:\t<funciones> ::= \n");}
                             ;
-funcion:                    TOK_FUNCTION tipo identificadores TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
-                            {fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");}
+funcion:                    fn_declaration sentencias TOK_LLAVEDERECHA
+                            {
+                                fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
+                                /*TODO: cosas con la tabla de simboloss */
+                            }
+                            ;
+fn_declaration:             fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
+                            {
+                                /*TODO: cosas con la tabla de simboloss */
+                            }
+                            ;
+fn_name:                    TOK_FUNCTION tipo TOK_IDENTIFICADOR
+                            {
+                                /*TODO: cosas con la tabla de simboloss */
+                            }
                             ;
 parametros_funcion:         parametro_funcion resto_parametros_funcion
                             {fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");}
@@ -107,8 +172,8 @@ resto_parametros_funcion:   TOK_PUNTOYCOMA parametro_funcion resto_parametros_fu
                             | 
                             {fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n");}
                             ;
-parametro_funcion:          tipo identificador
-                            {fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n");}
+parametro_funcion:          tipo idpf
+                            {fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <idpf>\n");}
                             ;
 declaraciones_funcion:      declaraciones
                             {fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n");}
@@ -230,15 +295,20 @@ constante_entera:           TOK_CONSTANTE_ENTERA
                             {fprintf(yyout, ";R104:\t<contante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
                             ;
 identificador:              TOK_IDENTIFICADOR
-                            {fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
+                            {
+                                fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
+                                /*TODO: insertar en tabla de simboloss */
+                            }
                             ;
+idpf:                       TOK_IDENTIFICADOR
+                            {
+                                /*TODO: insertar en tabla de simboloss */
+                            }
+                            ;
+
 %%
 
 void yyerror(const char *s){
-    extern int yline;
-    extern int ycol;
-    extern int err_morf;
-    extern int yyleng;
 
     if(!err_morf){
         printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol);

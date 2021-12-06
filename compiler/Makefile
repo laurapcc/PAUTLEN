@@ -1,16 +1,16 @@
 CC=gcc
 CFLAGS=-Wall
 
-all: pruebaSintactico
+all: alfa
 
-pruebaSintactico: pruebaSintactico.c lex.yy.o y.tab.o generacion.o tablaSimbols.o
+alfa: alfa.c alfa.h generacion.o symbols_table.o lex.yy.o y.tab.o 
 	$(CC) $(CFLAGS) $^ -o $@
 
 generacion.o: generacion.h generacion.c
 	$(CC) $(CFLAGS) -c generacion.c
 
-tablaSimbols.o: 
-	gcc -c symbols_table.c
+symbols_table.o: symbols_table.h symbols_table.c
+	$(CC) $(CFLAGS) -c symbols_table.c
 
 lex.yy.o: lex.yy.c
 	$(CC) $(CFLAGS) -c $^
@@ -25,6 +25,7 @@ y.tab.c: alfa.y
 	bison -d -y $^
 
 y.tab.h: alfa.y
+	bison -d -y -v $^
 	bison -d -y -v $^
 
 test1:
