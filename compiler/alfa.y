@@ -131,7 +131,7 @@ clase_vector:               TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_enter
                             {
                                 tamanio_vector_actual = $4.valor_entero;
                                 if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
-                                    fprintf("****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
+                                    fprintf(yyout, "****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
                                     return ERROR;
                                 }
                                 fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");}
@@ -298,6 +298,14 @@ identificador:              TOK_IDENTIFICADOR
                             {
                                 fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
                                 /*TODO: insertar en tabla de simboloss */
+                                if(is_local_scope(table)) {
+                                    if(search_global(table, $1.lexema)) {
+                                        fprintf(yyout, "****Error semantico en lin %d: Declaracion duplicada.\n", yline);
+                                        return ERROR;
+                                    }
+                                } else {
+
+                                }
                             }
                             ;
 idpf:                       TOK_IDENTIFICADOR
