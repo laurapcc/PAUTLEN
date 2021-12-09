@@ -10,16 +10,15 @@ symbol * new_symbol(char * id) {
         return NULL;
     }
 
-    if(strlen(id) < MAX_ID_LENGTH - 1) {
-        strcpy(s->id, id);
-    } else {
+    if(strlen(id) >= MAX_ID_LENGTH - 1) {
         fprintf(stderr, "ERROR: Symbol identifier too long: %s\n", id);
-        free(s);
+        destroy_symbol(s);
         return NULL;
     }
+    strcpy(s->id, id);
     s->value = ERROR;
     s->category = ERROR;
-    s->class = ERROR;
+    s->classs = ERROR;
     s->type = ERROR;
     s->size = ERROR;
     s->num_locals = ERROR;
@@ -32,6 +31,30 @@ symbol * new_symbol(char * id) {
 
 void destroy_symbol(symbol * s) {
     if(s) free(s);
+}
+
+void print_symbol(FILE * f, symbol * s) {
+    fprintf(f, "Symbol with id %s, ", s->id);
+    if(s->value != ERROR) fprintf(f, "value: %d, ", s->value);
+    if(s->category != ERROR) {
+        if(s->category == VARIABLE) { fprintf(f, "category: VARIABLE, "); } 
+        else if(s->category == PARAMETRO) { fprintf(f, "category: PARAMETRO, "); } 
+        else if(s->category == FUNCION) { fprintf(f, "category: FUNCION, "); }
+    }
+    if(s->classs != ERROR) {
+        if(s->classs == ESCALAR) { fprintf(f, "classs: ESCALAR, "); } 
+        else if(s->classs == VECTOR) { fprintf(f, "classs: VECTOR, "); }
+    }
+    if(s->type != ERROR) {
+        if(s->type == INT) { fprintf(f, "type: INT, "); } 
+        else if(s->type == BOOLEAN) { fprintf(f, "type: BOOLEAN, "); }
+    }
+    if(s->size != ERROR) { fprintf(f, "size: %d, ", s->size); }
+    if(s->num_locals != ERROR) { fprintf(f, "num_locals: %d, ", s->num_locals); }
+    if(s->pos_local != ERROR) { fprintf(f, "pos_local: %d, ", s->pos_local); }
+    if(s->num_params != ERROR) { fprintf(f, "num_params: %d, ", s->num_params); }
+    if(s->pos_param != ERROR) { fprintf(f, "pos_param: %d, ", s->pos_param); }
+    fprintf(f, "\n");
 }
 
 void symbol_set_value(symbol * s, int value) { s->value = value; }
@@ -58,6 +81,8 @@ int symbol_get_pos_param(symbol * s) { return s->pos_param; }
 
 
 
+
+/* SYMBOL TABLE MANIPULATION FUNCTIONS */
 
 /* Deletes a symbols table. */
 void delete_table(symbols_table * table) {
@@ -101,6 +126,8 @@ int is_local_scope(symbols_table * table) {
 
 
 
+/* SEARCH FUNCTIONS */
+
 /* Searches a symbol in an specific hash table by its id. */
 int search_hash_symbol(Hash_Table * table, char * id) {
     symbol * symbol = get_value_from_hstable(table, id, strlen(id));
@@ -108,30 +135,43 @@ int search_hash_symbol(Hash_Table * table, char * id) {
     return symbol->type;
 }
 
-/* Inserts a symbol in an specific hash table given its id and value. */
-int insert_hash_symbol(Hash_Table * table, char* id, int value, int category, int classs, 
-    int type, int size, int num_locals, int pos_local, int num_params, int pos_param) {
+/* Searches a symbol in the local symbol table by its id. */
+int search_local(symbols_table * table, char * id) {
+    /* If a local table exists, we search the element there. */
+    if(table -> exists_local) {
+        return search_hash_symbol(table->local_table, id);
+    }
+    return NOT_FOUND;
+}
+
+/* Searches a symbol in the global symbol table by its id. */
+int search_global(symbols_table * table, char* id) {
+    return search_hash_symbol(table->global_table, id);
+}
+
+/* Searches a symbol in the local and if not the global symbol table by its id. */
+int search_local_global(symbols_table * table, char* id) {
+    /* If a local table exists, we search the element there. */
+    if(table -> exists_local) {
+        int value = search_hash_symbol(table->local_table, id);
+        if(value != NOT_FOUND) return value;
+    }
+    /* If not, we search it in the global table */
+    return search_hash_symbol(table -> global_table, id);
+}
+
+
+
+/* INSERTION FUNCTIONS */
+
+/* Inserts a symbol in an specific hash table. */
+int insert_hash_symbol(Hash_Table * table, symbol * s) {
     /* If the symbol already exists in the table: error */
-    if (search_hash_symbol(table, id) != -1){
-        return ERROR;
-    }
-    
-    symbol * s = (symbol *) calloc(1, sizeof(symbol));
-    if(s == NULL) {
-        fprintf(stderr, "ERROR: Cannot allocate memory for new symbol with id %s", id);
-        return ERROR;
-    }
+    if (search_hash_symbol(table, s->id) != -1){ return ERROR; }
 
-    if(strlen(id) < MAX_ID_LENGTH - 1) {
-        strcpy(s->id, id);
-    } else {
-        fprintf(stderr, "ERROR: Symbol identifier too long: %s\n", id);
-        return ERROR;
-    }
-    s->type = value;
-
-    if(add_node2HashTable(table, id, strlen(id), s) == -1)  {
-        fprintf(stderr, "ERROR: Cannot insert into hashtable new symbol with id %s", id);
+    if(add_node2HashTable(table, s->id, strlen(s->id), s) == -1)  {
+        fprintf(stderr, "ERROR: Cannot insert into hashtable new symbol: ");
+        print_symbol(stderr, s);
         return ERROR;
     }
 
@@ -139,16 +179,25 @@ int insert_hash_symbol(Hash_Table * table, char* id, int value, int category, in
 }
 
 /* Inserts a symbol in the local symbol table given its id and value. */
-int insert_local(symbols_table * table, char * id, int value) {
-    /* If a local table exists, we insert the element there. */
-    if (table -> exists_local) {
-        return insert_hash_symbol(table->local_table, id, value);
+int declare_local_variable(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int pos_local, int num_params, int pos_param ) {
+    if(!(table -> exists_local)) { 
+        fprintf(stderr, "ERROR: exists_local is False.\n");
+        return ERROR; 
     }
-    return ERROR;
+
+    symbol * s = new_symbol(id);
+    if(s == NULL) {
+        fprintf(stderr, "ERROR: Error when initializing symbol.\n");
+        return ERROR;
+    }
+    symbol_set_value(s, value);
+    symbol_set_category(s, category);
+
 }
 
 /* Inserts a symbol in the global symbol table given its id and value. */
-int insert_global(symbols_table * table, char * id, int value) {
+int declare_global_variable(symbols_table * table, char * id, int value) {
     return insert_hash_symbol(table->global_table, id, value);
 }
 
@@ -162,30 +211,8 @@ int insert_symbol(symbols_table * table, char * id, int value) {
     return insert_hash_symbol(table->global_table, id, value);
 }
 
-/* Searches a symbol in the local symbol table by its id. */
-int search_local(symbols_table * table, char* id) {
-    /* If a local table exists, we search the element there. */
-    if(table -> exists_local) {
-        return search_hash_symbol(table->local_table, id);
-    }
-    return NOT_FOUND;
-}
 
-/* Searches a symbol in the global symbol table by its id. */
-int search_global(symbols_table * table, char* id) {
-    return search_hash_symbol(table->global_table, id);
-}
 
-/* Searches a symbol in the symbol table by its id. */
-int search_symbol(symbols_table * table, char* id) {
-    /* If a local table exists, we search the element there. */
-    if(table -> exists_local) {
-        int value = search_hash_symbol(table->local_table, id);
-        if(value != NOT_FOUND) return value;
-    }
-    /* If not, we search it in the global table */
-    return search_hash_symbol(table -> global_table, id);
-}
 
 
 /* Deletes the local hash table of the given symbol table. */
@@ -232,71 +259,3 @@ int open_scope(symbols_table* table, char* id, int value) {
     return OK;
 }
 
-
-/* Auxiliary function for handle_in_out. */
-void insert_print_file(symbols_table * table, FILE * fout, char * id, int type){
-    if (type == -999) {
-        if (close_scope(table) == ERROR) {
-            fprintf(fout, "-1\t%s\n", id);
-        }
-        else {
-            fprintf(fout, "%s\n", id);
-        }
-    }
-    else if (type < -1) {
-        if (open_scope(table, id, type) == ERROR) {
-            fprintf(fout, "-1\t%s\n", id);
-        }
-        else {
-            fprintf(fout, "%s\n", id);
-        }
-    }
-    else {
-        if (insert_symbol(table, id, type) == ERROR) {
-            fprintf(fout, "-1\t%s\n", id);
-        }
-        else {
-            fprintf(fout, "%s\n", id);
-        }
-    }
-}
-
-/* Auxiliary function for handle_in_out. */
-void search_print_file(symbols_table * table, FILE * fout, char * id){
-    int symbol = search_symbol(table, id);
-    fprintf(fout, "%s\t%d\n", id, symbol);
-}
-
-/* Given two oppened files, reads the input inserting and searching in a new symbols 
-table while writing in the output file the information of each operation. */
-int handle_in_out(FILE * fin, FILE * fout){
-    if(fin == NULL || fout == NULL) return ERROR;
-
-    symbols_table *table = create_table();
-    if (table == NULL) {
-        fprintf(stderr, "ERRROR: Error when creating the table.\n");
-        return ERROR;
-    }
-
-    char* line = NULL, *token1 = NULL, *token2 = NULL;
-    size_t len = 0;
-    size_t read;
-    int type; 
-
-    /* walk through all tokens */
-    while ((read = getline(&line, &len, fin)) != -1) {
-        token1 = strtok(line, " ");
-        token1[strcspn(token1, "\n")] = 0;
-        token2 = strtok(NULL, " ");
-        if (token2) {
-            type = atoi(token2);
-            insert_print_file(table, fout, token1, type);
-        } else {
-            search_print_file(table, fout, token1);
-        }
-    }
-
-    delete_table(table);
-
-    return OK;
-}
