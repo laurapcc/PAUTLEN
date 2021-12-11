@@ -1,5 +1,6 @@
 %{
 #include "y.tab.h"
+#include "alfa.h"
 
 int ycol = 1;
 int yline = 1;

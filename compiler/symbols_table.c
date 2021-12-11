@@ -180,7 +180,7 @@ int insert_hash_symbol(Hash_Table * table, symbol * s) {
 
 /* Inserts a symbol in the local symbol table given its id and value. */
 int declare_local_variable(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int pos_local, int num_params, int pos_param ) {
+    int type, int size, int  pos_local, int num_params, int pos_param ) {
     if(!(table -> exists_local)) { 
         fprintf(stderr, "ERROR: exists_local is False.\n");
         return ERROR; 
@@ -193,8 +193,14 @@ int declare_local_variable(symbols_table * table, char* id, int value, int categ
     }
     symbol_set_value(s, value);
     symbol_set_category(s, category);
+    symbol_set_classs(s, classs);
+    symbol_set_type(s, type);
+
+    return ERROR;
 
 }
+
+
 
 /* Inserts a symbol in the global symbol table given its id and value. */
 int declare_global_variable(symbols_table * table, char * id, int value) {

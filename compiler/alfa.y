@@ -146,7 +146,7 @@ funciones:                  funcion funciones
                             | 
                             {fprintf(yyout, ";R21:\t<funciones> ::= \n");}
                             ;
-funcion:                    fn_declaration sentencias TOK_LLAVEDERECHA
+funcion:                    fn_declaration sentencias TOK_LLAVEDERECHA 
                             {
                                 fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
                                 /*TODO: cosas con la tabla de simboloss */
