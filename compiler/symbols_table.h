@@ -31,7 +31,8 @@ typedef struct _hash_table {
 
 /* SYMBOL STRUCTURE MANIPULATION FUNCTIONS */
 
-symbol * new_symbol(char * id);
+symbol * new_symbol(char* id, int value, int category, int classs, int type, int size, 
+    int num_locals, int  pos_local, int num_params, int pos_param);
 void destroy_symbol(symbol * s);
 void print_symbol(FILE * f, symbol * s);
 
@@ -86,21 +87,17 @@ int search_local_global(symbols_table * table, char* id);
 
 /* Inserts a symbol in an specific hash table. */
 int insert_hash_symbol(Hash_Table * table, symbol * s);
-
-
-/* 
-    Hash_Table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int pos_local, int num_params, int pos_param 
-*/
-
-int insert_local(symbols_table * table, char * id, int value);
-int insert_global(symbols_table * table, char * id, int value);
-int insert_symbol(symbols_table * table, char * id, int value);
-
-
-int open_scope(symbols_table* table, char* id, int value);
+/* Creates and inserts a symbol in the local symbol table. */
+int declare_local(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+/* Creates and inserts a symbol in the global symbol table. */
+int declare_global(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+/* Deletes the local hash table of the given symbol table. */
 int close_scope(symbols_table * table);
+/* Declares a function, creating a new local table, possibly eliminating the previous and inserting the new element. */
+int declare_function(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
 
-int handle_in_out(FILE * fin, FILE * fout);
 
 #endif

@@ -3,7 +3,8 @@
 
 /* SYMBOL STRUCTURE MANIPULATION FUNCTIONS */
 
-symbol * new_symbol(char * id) {
+symbol * new_symbol(char* id, int value, int category, int classs, int type, int size, 
+    int num_locals, int  pos_local, int num_params, int pos_param ) {
     symbol * s = (symbol *) calloc(1, sizeof(symbol));
     if(s == NULL) {
         fprintf(stderr, "ERROR: Cannot allocate memory for new symbol with id %s", id);
@@ -16,15 +17,15 @@ symbol * new_symbol(char * id) {
         return NULL;
     }
     strcpy(s->id, id);
-    s->value = ERROR;
-    s->category = ERROR;
-    s->classs = ERROR;
-    s->type = ERROR;
-    s->size = ERROR;
-    s->num_locals = ERROR;
-    s->pos_local = ERROR;
-    s->num_params = ERROR;
-    s->pos_param = ERROR;
+    s->value = value;
+    s->category = category;
+    s->classs = classs;
+    s->type = type;
+    s->size = size;
+    s->num_locals = num_locals;
+    s->pos_local = pos_local;
+    s->num_params = num_params;
+    s->pos_param = pos_param;
 
     return s;
 }
@@ -178,47 +179,42 @@ int insert_hash_symbol(Hash_Table * table, symbol * s) {
     return OK;
 }
 
-/* Inserts a symbol in the local symbol table given its id and value. */
-int declare_local_variable(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int  pos_local, int num_params, int pos_param ) {
+/* Creates and inserts a symbol in the local symbol table. */
+int declare_local(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
     if(!(table -> exists_local)) { 
         fprintf(stderr, "ERROR: exists_local is False.\n");
         return ERROR; 
+    } else if(!table->local_table) { 
+        fprintf(stderr, "ERROR: local table is null.\n");
+        return ERROR; 
     }
 
-    symbol * s = new_symbol(id);
+    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
     if(s == NULL) {
         fprintf(stderr, "ERROR: Error when initializing symbol.\n");
         return ERROR;
     }
-    symbol_set_value(s, value);
-    symbol_set_category(s, category);
-    symbol_set_classs(s, classs);
-    symbol_set_type(s, type);
 
-    return ERROR;
-
+    return insert_hash_symbol(table->local_table, s);
 }
 
-
-
-/* Inserts a symbol in the global symbol table given its id and value. */
-int declare_global_variable(symbols_table * table, char * id, int value) {
-    return insert_hash_symbol(table->global_table, id, value);
-}
-
-/* Inserts a symbol in the symbol table given its id and value. */
-int insert_symbol(symbols_table * table, char * id, int value) {
-    /* If a local table exists, we insert the element there. */
-    if (table -> exists_local) {
-        return insert_hash_symbol(table->local_table, id, value);
+/* Creates and inserts a symbol in the global symbol table. */
+int declare_global(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
+    if(!table->global_table) { 
+        fprintf(stderr, "ERROR: global table is null.\n");
+        return ERROR; 
     }
-    /* If not, we insert it in the global table */
-    return insert_hash_symbol(table->global_table, id, value);
+
+    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
+    if(s == NULL) {
+        fprintf(stderr, "ERROR: Error when initializing symbol.\n");
+        return ERROR;
+    }
+
+    return insert_hash_symbol(table->global_table, s);
 }
-
-
-
 
 
 /* Deletes the local hash table of the given symbol table. */
@@ -233,17 +229,25 @@ int close_scope(symbols_table * table) {
     return OK;
 }
 
-/* Creates a new local table, possibly eliminating the previous and inserting the new element. */
-int open_scope(symbols_table* table, char* id, int value) {
+/* Declares a function, creating a new local table, possibly eliminating the previous and inserting the new element. */
+int declare_function(symbols_table * table, char* id, int value, int category, int classs,
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
 
-    /* Searh for the element in the global table, if it exists, error. */
+    symbol * s1 = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
+    symbol * s2 = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
+    if(s1 == NULL || s2 == NULL) {
+        fprintf(stderr, "ERROR: Error when initializing new symbol.\n");
+        return ERROR;
+    }
+
+    /* Search for the element in the global table, if it exists, error. */
     if (search_hash_symbol(table -> global_table, id) != NOT_FOUND){
         fprintf(stderr, "ERROR: function %s already exists.\n", id);
         return ERROR;
     }
 
     /* Insert the element in the global table. */
-    if (insert_hash_symbol(table -> global_table, id, value) == ERROR) {
+    if (insert_hash_symbol(table -> global_table, s1) == ERROR) {
         fprintf(stderr, "ERROR: error while opening scope for function %s: insertion in global table failed.\n", id);
         return ERROR;
     }
@@ -252,12 +256,11 @@ int open_scope(symbols_table* table, char* id, int value) {
     close_scope(table);
     table->local_table = creat_hash_table();
     if(table->local_table == NULL) {
-        delete_table(table);
         fprintf(stderr, "ERROR: Error while opening scope for function %s: Error when creating local hash table.\n", id);
         return ERROR;
     }
     table->exists_local = TRUE;
-    if (insert_hash_symbol(table -> local_table, id, value) == ERROR) {
+    if (insert_hash_symbol(table -> local_table, s2) == ERROR) {
         printf("ERROR: Error while opening scope for function %s: insertion in local table failed.\n", id);
         return ERROR;
     }
