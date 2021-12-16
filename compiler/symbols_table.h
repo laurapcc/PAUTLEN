@@ -36,6 +36,7 @@ symbol * new_symbol(char* id, int value, int category, int classs, int type, int
 void destroy_symbol(symbol * s);
 void print_symbol(FILE * f, symbol * s);
 
+void symbol_set_id(symbol * s, char * id);
 void symbol_set_value(symbol * s, int value);
 void symbol_set_category(symbol * s, int category);
 void symbol_set_classs(symbol * s, int classs);
@@ -48,6 +49,7 @@ void symbol_set_pos_param(symbol * s, int pos_param);
 void symbol_inc_num_locals(symbol * s);
 void symbol_inc_num_params(symbol * s);
 
+char * symbol_get_id(symbol * s);
 int symbol_get_value(symbol * s);
 int symbol_get_category(symbol * s);
 int symbol_get_classs(symbol * s);
@@ -57,7 +59,6 @@ int symbol_get_num_locals(symbol * s);
 int symbol_get_pos_local(symbol * s);
 int symbol_get_num_params(symbol * s);
 int symbol_get_pos_param(symbol * s);
-
 
 
 
@@ -74,13 +75,13 @@ int is_local_scope(symbols_table * table);
 /* SEARCH FUNCTIONS */
 
 /* Searches a symbol in an specific hash table by its id. */
-int search_hash_symbol(Hash_Table * table, char * id);
+symbol * search_hash_symbol(Hash_Table * table, char * id);
 /* Searches a symbol in the local symbol table by its id. */
-int search_local(symbols_table * table, char* id);
+symbol * search_local(symbols_table * table, char* id);
 /* Searches a symbol in the global symbol table by its id. */
-int search_global(symbols_table * table, char* id);
+symbol * search_global(symbols_table * table, char* id);
 /* Searches a symbol in the local and if not the global symbol table by its id. */
-int search_local_global(symbols_table * table, char* id);
+symbol * search_local_global(symbols_table * table, char* id);
 
 
 /* INSERTION FUNCTIONS */
@@ -98,6 +99,9 @@ int close_scope(symbols_table * table);
 /* Declares a function, creating a new local table, possibly eliminating the previous and inserting the new element. */
 int declare_function(symbols_table * table, char* id, int value, int category, int classs,
     int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+
+
+int handle_in_out(FILE * fin, FILE * fout);
 
 
 #endif
