@@ -233,11 +233,22 @@ fn_declaration:             fn_name TOK_PARENTESISIZQUIERDO parametros_funcion T
                             ;
 fn_name:                    TOK_FUNCTION tipo TOK_IDENTIFICADOR
                             {
-                                /* !!!!!!!!!! NO TERMINADO !!!!!!!!!!!!!!*/
                                 /* funcion no existe, entonces la insertamos en la tabla de simbolos */
                                 if (search_local_global(table, $3.lexema) == NULL){
                                     strcpy($$.lexema, $3.lexema);
-                                    
+                                    declare_function(table, $3.lexema, 0, FUNCION, 0,0,0,0,0,0,0);
+                                    tamanio = 1;
+                                    num_total_var_locales = 0;
+                                    pos_parametro = 0;
+                                    num_total_parametros = 0;
+                                    funcion_retorno = 0;
+                                    funcion_tipo = tipo;
+                                }
+                                /* la funcion existe */
+                                else{
+                                    printf("****Error semantico en lin %d: Declaracion duplicada.\n", yline);
+                                    delete_table(table);
+                                    return ERROR;
                                 }
                             }
                             ;
