@@ -24,5 +24,12 @@ typedef struct hash_table
 	Hash_node **table;	//Tabla de picadillo
 }Hash_Table;
 
+static unsigned int JSHash(char* key, unsigned int key_len);
+static void init_hs_node(Hash_node *node);
+static Hash_Table *creat_hash_table(void);
+int add_node2HashTable(Hash_Table *Hs_table, char *key, unsigned int key_len, void *value);
+void *get_value_from_hstable(Hash_Table *Hs_table, char *key, unsigned int key_len);
+void hash_table_delete(Hash_Table *Hs_Table);
+
 
 #endif

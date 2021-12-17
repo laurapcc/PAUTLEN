@@ -203,7 +203,7 @@ typedef union YYSTYPE
     tipo_atributos atributos;
 }
 /* Line 193 of yacc.c.  */
-#line 207 "y.tab.c"
+#line 207 "alfa.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -216,7 +216,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 220 "y.tab.c"
+#line 220 "alfa.tab.c"
 
 #ifdef short
 # undef short
@@ -1552,7 +1552,7 @@ yyreduce:
     {
         case 2:
 #line 91 "alfa.y"
-    {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
+    {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");;}
     break;
 
   case 3:
@@ -1563,55 +1563,55 @@ yyreduce:
         fprintf(stderr, "ERRROR: Error when creating the table.\n");
         return ERROR;
     }
-}
+;}
     break;
 
   case 4:
 #line 103 "alfa.y"
-    {fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
+    {fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");;}
     break;
 
   case 5:
 #line 105 "alfa.y"
-    {fprintf(yyout, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
+    {fprintf(yyout, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");;}
     break;
 
   case 6:
 #line 108 "alfa.y"
-    {fprintf(yyout, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
+    {fprintf(yyout, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");;}
     break;
 
   case 7:
 #line 111 "alfa.y"
     {
                                 clase_actual = ESCALAR;
-                                fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");}
+                                fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");;}
     break;
 
   case 8:
 #line 115 "alfa.y"
     {
                                 clase_actual = VECTOR;
-                                fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");}
+                                fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");;}
     break;
 
   case 9:
 #line 120 "alfa.y"
-    {fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n");}
+    {fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n");;}
     break;
 
   case 10:
 #line 123 "alfa.y"
     {
                                 tipo_actual = INT;
-                                fprintf(yyout, ";R10:\t<tipo> ::= int\n");}
+                                fprintf(yyout, ";R10:\t<tipo> ::= int\n");;}
     break;
 
   case 11:
 #line 127 "alfa.y"
     {
                                 tipo_actual = BOOLEAN;
-                                fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");}
+                                fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");;}
     break;
 
   case 12:
@@ -1622,27 +1622,27 @@ yyreduce:
                                     fprintf(yyout, "****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
                                     return ERROR;
                                 }
-                                fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");}
+                                fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");;}
     break;
 
   case 13:
 #line 141 "alfa.y"
-    {fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n");}
+    {fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n");;}
     break;
 
   case 14:
 #line 143 "alfa.y"
-    {fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");}
+    {fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");;}
     break;
 
   case 15:
 #line 146 "alfa.y"
-    {fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
+    {fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n");;}
     break;
 
   case 16:
 #line 148 "alfa.y"
-    {fprintf(yyout, ";R21:\t<funciones> ::= \n");}
+    {fprintf(yyout, ";R21:\t<funciones> ::= \n");;}
     break;
 
   case 17:
@@ -1650,296 +1650,296 @@ yyreduce:
     {
                                 fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
                                 /*TODO: cosas con la tabla de simboloss */
-                            }
+                            ;}
     break;
 
   case 18:
 #line 157 "alfa.y"
     {
                                 /*TODO: cosas con la tabla de simboloss */
-                            }
+                            ;}
     break;
 
   case 19:
 #line 162 "alfa.y"
     {
                                 /*TODO: cosas con la tabla de simboloss */
-                            }
+                            ;}
     break;
 
   case 20:
 #line 167 "alfa.y"
-    {fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");}
+    {fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");;}
     break;
 
   case 21:
 #line 169 "alfa.y"
-    {fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n");}
+    {fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n");;}
     break;
 
   case 22:
 #line 172 "alfa.y"
-    {fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n");}
+    {fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n");;}
     break;
 
   case 23:
 #line 174 "alfa.y"
-    {fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n");}
+    {fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n");;}
     break;
 
   case 24:
 #line 177 "alfa.y"
-    {fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <idpf>\n");}
+    {fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <idpf>\n");;}
     break;
 
   case 25:
 #line 180 "alfa.y"
-    {fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n");}
+    {fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n");;}
     break;
 
   case 26:
 #line 182 "alfa.y"
-    {fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n");}
+    {fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n");;}
     break;
 
   case 27:
 #line 185 "alfa.y"
-    {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");}
+    {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");;}
     break;
 
   case 28:
 #line 187 "alfa.y"
-    {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");}
+    {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");;}
     break;
 
   case 29:
 #line 190 "alfa.y"
-    {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
+    {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");;}
     break;
 
   case 30:
 #line 192 "alfa.y"
-    {fprintf(yyout, ";R33:\t<sentencia> ::= <bloque>\n");}
+    {fprintf(yyout, ";R33:\t<sentencia> ::= <bloque>\n");;}
     break;
 
   case 31:
 #line 195 "alfa.y"
-    {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asignacion>\n");}
+    {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asignacion>\n");;}
     break;
 
   case 32:
 #line 197 "alfa.y"
-    {fprintf(yyout, ";R35:\t<sentencia_simple> ::= <lectura>\n");}
+    {fprintf(yyout, ";R35:\t<sentencia_simple> ::= <lectura>\n");;}
     break;
 
   case 33:
 #line 199 "alfa.y"
-    {fprintf(yyout, ";R36:\t<sentencia_simple> ::= <escritura>\n");}
+    {fprintf(yyout, ";R36:\t<sentencia_simple> ::= <escritura>\n");;}
     break;
 
   case 34:
 #line 201 "alfa.y"
-    {fprintf(yyout, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");}
+    {fprintf(yyout, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");;}
     break;
 
   case 35:
 #line 204 "alfa.y"
-    {fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n");}
+    {fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n");;}
     break;
 
   case 36:
 #line 206 "alfa.y"
-    {fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n");}
+    {fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n");;}
     break;
 
   case 37:
 #line 209 "alfa.y"
-    {fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+    {fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");;}
     break;
 
   case 38:
 #line 211 "alfa.y"
-    {fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
+    {fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");;}
     break;
 
   case 39:
 #line 214 "alfa.y"
-    {fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
+    {fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");;}
     break;
 
   case 40:
 #line 217 "alfa.y"
-    {fprintf(yyout, ";R50:\t<condicional> ::= if (<exp>) {<sentencias>}\n");}
+    {fprintf(yyout, ";R50:\t<condicional> ::= if (<exp>) {<sentencias>}\n");;}
     break;
 
   case 41:
 #line 219 "alfa.y"
-    {fprintf(yyout, ";R51:\t<condicional> ::= if (<exp>) {<sentencias>} else {<sentencias>}\n");}
+    {fprintf(yyout, ";R51:\t<condicional> ::= if (<exp>) {<sentencias>} else {<sentencias>}\n");;}
     break;
 
   case 42:
 #line 222 "alfa.y"
-    {fprintf(yyout, ";R52:\t<bucle> ::= while (<exp>) {<sentencias>}\n");}
+    {fprintf(yyout, ";R52:\t<bucle> ::= while (<exp>) {<sentencias>}\n");;}
     break;
 
   case 43:
 #line 225 "alfa.y"
-    {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");}
+    {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");;}
     break;
 
   case 44:
 #line 228 "alfa.y"
-    {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");}
+    {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");;}
     break;
 
   case 45:
 #line 231 "alfa.y"
-    {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
+    {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");;}
     break;
 
   case 46:
 #line 234 "alfa.y"
-    {fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); sumar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); sumar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 47:
 #line 236 "alfa.y"
-    {fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n"); restar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n"); restar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 48:
 #line 238 "alfa.y"
-    {fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n"); dividir(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n"); dividir(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 49:
 #line 240 "alfa.y"
-    {fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n"); multiplicar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n"); multiplicar(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 50:
 #line 242 "alfa.y"
-    {fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n"); cambiar_signo(yyout, (yyvsp[(2) - (2)].atributos));}
+    {fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n"); cambiar_signo(yyout, (yyvsp[(2) - (2)].atributos));;}
     break;
 
   case 51:
 #line 244 "alfa.y"
-    {fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); y(yyput, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); y(yyput, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 52:
 #line 246 "alfa.y"
-    {fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); o(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));}
+    {fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); o(yyout, (yyvsp[(1) - (3)].atributos), (yyvsp[(3) - (3)].atributos));;}
     break;
 
   case 53:
 #line 248 "alfa.y"
-    {fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); }
+    {fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); ;}
     break;
 
   case 54:
 #line 250 "alfa.y"
-    {fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");}
+    {fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");;}
     break;
 
   case 55:
 #line 252 "alfa.y"
-    {fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");}
+    {fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");;}
     break;
 
   case 56:
 #line 254 "alfa.y"
-    {fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");}
+    {fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");;}
     break;
 
   case 57:
 #line 256 "alfa.y"
-    {fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");}
+    {fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");;}
     break;
 
   case 58:
 #line 258 "alfa.y"
-    {fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");}
+    {fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");;}
     break;
 
   case 59:
 #line 260 "alfa.y"
-    {fprintf(yyout, ";R88:\t<exp> ::= <identificador>( <lista_expresiones> )\n");}
+    {fprintf(yyout, ";R88:\t<exp> ::= <identificador>( <lista_expresiones> )\n");;}
     break;
 
   case 60:
 #line 263 "alfa.y"
-    {fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
+    {fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");;}
     break;
 
   case 61:
 #line 265 "alfa.y"
-    {fprintf(yyout, ";R90:\t<lista_expresiones> ::=\n");}
+    {fprintf(yyout, ";R90:\t<lista_expresiones> ::=\n");;}
     break;
 
   case 62:
 #line 268 "alfa.y"
-    {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
+    {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");;}
     break;
 
   case 63:
 #line 270 "alfa.y"
-    {fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::=\n");}
+    {fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::=\n");;}
     break;
 
   case 64:
 #line 273 "alfa.y"
-    {fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
+    {fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");;}
     break;
 
   case 65:
 #line 275 "alfa.y"
-    {fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
+    {fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");;}
     break;
 
   case 66:
 #line 277 "alfa.y"
-    {fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
+    {fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");;}
     break;
 
   case 67:
 #line 279 "alfa.y"
-    {fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
+    {fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");;}
     break;
 
   case 68:
 #line 281 "alfa.y"
-    {fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
+    {fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");;}
     break;
 
   case 69:
 #line 283 "alfa.y"
-    {fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
+    {fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n");;}
     break;
 
   case 70:
 #line 286 "alfa.y"
-    {fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");}
+    {fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");;}
     break;
 
   case 71:
 #line 288 "alfa.y"
-    {fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");}
+    {fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");;}
     break;
 
   case 72:
 #line 291 "alfa.y"
-    {fprintf(yyout, ";R102:\t<constante_logica> ::= true\n");}
+    {fprintf(yyout, ";R102:\t<constante_logica> ::= true\n");;}
     break;
 
   case 73:
 #line 293 "alfa.y"
-    {fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");}
+    {fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");;}
     break;
 
   case 74:
 #line 296 "alfa.y"
-    {fprintf(yyout, ";R104:\t<contante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
+    {fprintf(yyout, ";R104:\t<contante_entera> ::= TOK_CONSTANTE_ENTERA\n");;}
     break;
 
   case 75:
@@ -1955,19 +1955,19 @@ yyreduce:
                                 } else {
 
                                 }
-                            }
+                            ;}
     break;
 
   case 76:
 #line 313 "alfa.y"
     {
                                 /*TODO: insertar en tabla de simboloss */
-                            }
+                            ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1971 "y.tab.c"
+#line 1971 "alfa.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

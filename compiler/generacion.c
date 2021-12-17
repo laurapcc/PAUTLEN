@@ -1,5 +1,6 @@
+#include <stdio.h>
 #include "generacion.h"
-
+#include "symbols_table.h"
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
 Todas ellas escriben el código NASM a un FILE* proporcionado como primer
@@ -31,10 +32,9 @@ mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
 
-//NO SE PORQ LA VARIABLE TIPO
 void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano){
     if (fpasm == NULL) return;
-
+    
     fprintf(fpasm, "_%s resd %d\n", nombre, tamano);
 }
 /*

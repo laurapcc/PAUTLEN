@@ -3,6 +3,7 @@
 #include "generacion.h"
 #include "symbols_table.h"
 #include "alfa.h"
+#include "y.tab.h"
 
 extern FILE * yyout;
 extern int yline;
@@ -18,8 +19,16 @@ symbols_table *table = NULL;
 /** GLOBAL VARIABLES **/
 int tipo_actual; /* INT or BOOLEAN */
 int clase_actual; /* ESCALAR or VECTOR */
-int tamanio_vector_actual;
-int pos_variable_local_actual; /* para propagar la posicion de una variable local en declaraciones correspondientes a variables locales */
+int tamanio = 1;
+int funcion_retorno = 0;
+int funcion_tipo;
+int num_total_parametros = 0;
+int num_total_var_locales = 0;
+int etiqueta = 0;
+int dentro_fun = 0; /* 1 si estamos dentro de la llamada de una funcion */
+int pos_parametro; /* solo para elementos de tipo parametro */ 
+int pos_var_local = 0; /* solo para variables locales */
+int num_arg_funcion = 0;
 
 
 %}
@@ -35,7 +44,7 @@ int pos_variable_local_actual; /* para propagar la posicion de una variable loca
 %token TOK_MAIN
 %token TOK_INT
 %token TOK_BOOLEAN
-%token TOK_ARRAY
+%token <atributos> TOK_ARRAY
 %token TOK_FUNCTION
 %token TOK_IF
 %token TOK_ELSE
@@ -75,28 +84,55 @@ int pos_variable_local_actual; /* para propagar la posicion de una variable loca
 /* No terminales con atributos semanticos */
 %type <atributos> exp
 %type <atributos> comparacion
+%type <atributos> constante
 %type <atributos> constante_entera
 %type <atributos> constante_logica
 %type <atributos> identificador
+%type <atributos> idf_llamada_funcion
+%type <atributos> condicional
+%type <atributos> if_exp 
+%type <atributos> if_else 
+%type <atributos> bucle 
+%type <atributos> while_exp 
+%type <atributos> while 
+%type <atributos> elemento_vector
+%type <atributos> funcion 
+%type <atributos> fn_declaration 
+%type <atributos> fn_name 
 
 
+%left TOK_IGUAL TOK_MENORIGUAL TOK_MENOR TOK_MAYORIGUAL TOK_MAYOR TOK_DISTINTO
 %left TOK_MAS TOK_MENOS TOK_OR
 %left TOK_ASTERISCO TOK_DIVISION TOK_AND
 %right TOK_NOT
 
 %%
 
-programa:                   inicioTabla TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA 
+programa:                   TOK_MAIN inicioTabla TOK_LLAVEIZQUIERDA declaraciones escribir_CS funciones escribir_main sentencias TOK_LLAVEDERECHA 
                             {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
                             ;
 
-inicioTabla: {
-    table = create_table();
-    if (table == NULL) {
-        fprintf(stderr, "ERRROR: Error when creating the table.\n");
-        return ERROR;
-    }
-}
+inicioTabla:                
+                            {
+                                table = create_table();
+                                if (table == NULL) {
+                                    fprintf(stderr, "ERRROR: Error when creating the table.\n");
+                                    return ERROR;
+                                }
+                                escribir_subseccion_data(yyout);
+                                escribir_cabecera_bss(yyout);
+                            }
+                            ;
+
+escribir_CS:                {
+                                escribir_segmento_codigo(yyout);
+                            }
+                            ;
+
+escribir_main:              {
+                                escribir_inicio_main(yyout);
+                            }
+                            ;
     
 declaraciones:              declaracion 
                             {fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
@@ -116,7 +152,8 @@ clase:                      clase_escalar
                                 fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");}
                             ;
 clase_escalar:              tipo
-                            {fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n");}
+                            {fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n");
+                            tamanio = 1;}
                             ;
 tipo:                       TOK_INT
                             {

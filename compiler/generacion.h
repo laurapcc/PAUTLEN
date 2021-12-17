@@ -1,6 +1,8 @@
 #ifndef GENERACION_H
 #define GENERACION_H
 #include <stdio.h>
+#include "alfa.h"
+#include "symbols_table.h"
 
 /* Declaraciones de tipos de datos del compilador */
 #define ENTERO 0
