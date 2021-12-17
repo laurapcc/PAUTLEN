@@ -155,7 +155,10 @@ symbol * search_global(symbols_table * table, char* id) {
 symbol * search_local_global(symbols_table * table, char* id) {
     /* If a local table exists, we search the element there. */
     if(table -> exists_local) {
-        return search_hash_symbol(table->local_table, id);
+        symbol * s = search_hash_symbol(table->local_table, id);
+        if(s != NULL) {
+            return s;
+        }
     }
     /* If not, we search it in the global table */
     return search_hash_symbol(table -> global_table, id);
