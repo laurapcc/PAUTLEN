@@ -109,14 +109,16 @@ int num_arg_funcion = 0;
 %%
 
 programa:                   TOK_MAIN inicioTabla TOK_LLAVEIZQUIERDA declaraciones escribir_CS funciones escribir_main sentencias TOK_LLAVEDERECHA 
-                            {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
+                            {fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
+                            escribir_fin(yyout);
+                            delete_table(table);}
                             ;
 
 inicioTabla:                
                             {
                                 table = create_table();
                                 if (table == NULL) {
-                                    fprintf(stderr, "ERRROR: Error when creating the table.\n");
+                                    printf("ERRROR: Error when creating the table.\n");
                                     return ERROR;
                                 }
                                 escribir_subseccion_data(yyout);
@@ -164,14 +166,21 @@ tipo:                       TOK_INT
                                 tipo_actual = BOOLEAN;
                                 fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");}
                             ;
-clase_vector:               TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO
+clase_vector:               TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO TOK_CONSTANTE_ENTERA TOK_CORCHETEDERECHO
                             {
-                                tamanio_vector_actual = $4.valor_entero;
-                                if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
-                                    fprintf(yyout, "****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
+                                fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");
+                                tamanio = $4.valor_entero;
+                                if ((tamanio < 1) || (tamanio > MAX_TAMANIO_VECTOR)){
+                                    printf("****Error semantico en lin %d: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64)\n", yline);
+                                    delete_table(table);
                                     return ERROR;
                                 }
-                                fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");}
+                                if (is_local_scope(table)){
+                                    printf("****Error semantico en linea %d: Declaracion de vector en ambito local.\n", yline);
+                                    delete_table(table);
+                                    return ERROR;
+                                }
+                            }
                             ;
 identificadores:            identificador
                             {fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n");}
@@ -186,17 +195,50 @@ funciones:                  funcion funciones
 funcion:                    fn_declaration sentencias TOK_LLAVEDERECHA 
                             {
                                 fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
-                                /*TODO: cosas con la tabla de simboloss */
+                                if (funcion_retorno < 1){
+                                    printf("****Error semantico en lin %d: Funcion %s sin sentencia de retorno.\n", yline, $1.lexema);
+                                    delete_table(table);
+                                    return ERROR;
+                                }
+                                close_scope(table);
+                                symbol *sym;
+                                sym = search_local_global(table, $1.lexema);
+                                if (sym == NULL){
+                                    printf("****Error en la tabla de simbolos.\n");
+                                    delete_table(table);
+                                    return ERROR;
+                                }
+                                sym->num_params = num_total_parametros;
+                                sym->type = funcion_tipo;
+                                num_total_parametros = 0;
+                                num_total_var_locales = 0;
+                                pos_parametro = 0;
                             }
                             ;
 fn_declaration:             fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
                             {
-                                /*TODO: cosas con la tabla de simboloss */
+                                symbol *sym;
+                                sym = search_local_global(table, $1.lexema);
+                                if (sym == NULL){
+                                    printf("****Error en la tabla de simbolos.\n");
+                                    delete_table(table);
+                                    return ERROR;
+                                }
+                                sym->num_params = num_total_parametros;
+                                sym->num_locals = num_total_var_locales;
+                                sym->type = funcion_tipo;
+                                strcpy($$.lexema, $1.lexema);
+                                declararFuncion(yyout, $1.lexema, num_total_var_locales);
                             }
                             ;
 fn_name:                    TOK_FUNCTION tipo TOK_IDENTIFICADOR
                             {
-                                /*TODO: cosas con la tabla de simboloss */
+                                /* !!!!!!!!!! NO TERMINADO !!!!!!!!!!!!!!*/
+                                /* funcion no existe, entonces la insertamos en la tabla de simbolos */
+                                if (search_local_global(table, $3.lexema) == NULL){
+                                    strcpy($$.lexema, $3.lexema);
+                                    
+                                }
                             }
                             ;
 parametros_funcion:         parametro_funcion resto_parametros_funcion

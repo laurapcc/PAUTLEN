@@ -1,5 +1,5 @@
 #include "symbols_table.h"
-#include "hash.h"
+#include "hash.c"
 
 /* SYMBOL STRUCTURE MANIPULATION FUNCTIONS */
 
