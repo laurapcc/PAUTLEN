@@ -98,6 +98,10 @@ int num_arg_funcion = 0;
 %type <atributos> funcion
 %type <atributos> fn_declaration
 %type <atributos> fn_name
+%type <atributos> if_exp
+%type <atributos> if_else_exp
+%type <atributos> bucle_exp
+%type <atributos> while
 
 
 %left TOK_IGUAL TOK_MENORIGUAL TOK_MENOR TOK_MAYORIGUAL TOK_MAYOR TOK_DISTINTO
@@ -386,29 +390,109 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 
 elemento_vector:    identificador  TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
     fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");
+    // identificador existe en la tabla
+    symbol *sym = NULL;
+    sym = search_local_global(table, $1.lexema);
+    if (sym == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    // identificador corresponde con la declaracion de un vector
+    if (symbol_get_category(sym) != VECTOR){
+        semantic_error("Intento de indexacion de una variable que no es de tipo vector.\n");
+        return ERROR;
+    }
+    // indice de tipo INT
+    if ($3.tipo != INT){
+        semantic_error("El indice en una operacion de indexacion tiene que ser de tipo entero.\n");
+        return ERROR;
+    }
+    $$.tipo = symbol_get_type(sym);
+    $$.es_direccion = 1;
+    escribir_elemento_vector(yyout, $1.lexema, symbol_get_size(sym), $3.es_direccion);
 };
 
-condicional:    TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+condicional:    if_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
     fprintf(yyout, ";R50:\t<condicional> ::= if (<exp>) {<sentencias>}\n");
+    ifthen_fin(yyout, $1.etiqueta);
 }
-                | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+                | if_else_exp TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
     fprintf(yyout, ";R51:\t<condicional> ::= if (<exp>) {<sentencias>} else {<sentencias>}\n");
+    ifthenelse_fin(yyout, $1.etiqueta);
 };
 
-bucle:  TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp {
+    if ($3.tipo != BOOLEAN) {
+        semantic_error("Condicional con condicion de tipo int.\n");
+        return ERROR;
+    }
+    $$.etiqueta = etiqueta;
+    ifthen_inicio(yyout, $3.es_direccion, $$.etiqueta);
+};
+
+if_else_exp: if_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+    $$.etiqueta = $1.etiqueta;
+    ifthenelse_fin_then(yyout, $$.etiqueta);
+};
+
+bucle:  bucle_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
     fprintf(yyout, ";R52:\t<bucle> ::= while (<exp>) {<sentencias>}\n");
+    while_fin(yyout, $1.etiqueta);
+};
+
+bucle_exp: while TOK_PARENTESISIZQUIERDO exp {
+    if ($3.tipo != BOOLEAN){
+        semantic_error("Bucle con condicion de tipo int.\n");
+        return ERROR;
+    }
+    $$.etiqueta = $1.etiqueta;
+    while_exp_pila(yyout, $3.es_direccion, $$.etiqueta);
+};
+
+while: TOK_WHILE {
+    $$.etiqueta = etiqueta;
+    while_inicio(yyout, $$.etiqueta);
 };
 
 lectura:    TOK_SCANF identificador {
     fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");
+    symbol *sym = NULL;
+    sym = search_local_global(table, $2.lexema);
+    if (sym == NULL) {
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $2.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    int cat = symbol_get_category(sym);
+    if (cat == FUNCION || cat == VECTOR){
+        semantic_error("-- No se que error poner --");
+        return ERROR;
+    }
+    leer(yyout, $2.lexema, symbol_get_type(sym));
 };
 
 escritura:  TOK_PRINTF exp {
     fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");
+    operandoEnPilaAArgumento(yyout, $2.es_direccion);
+    escribir(yyout, 0, $2.tipo);
 };
 
 retorno_funcion:    TOK_RETURN exp {
     fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
+    if (dentro_fun == 0) {
+        semantic_error("Sentencia de retorno fuera del cuerpo de una función.\n");
+        return ERROR;
+    }
+    if ($2.tipo != funcion_tipo){
+        semantic_error("-- no se que error --");
+        return ERROR;
+    }
+
+    funcion_retorno++;
+    retornarFuncion(yyout, $2.es_direccion);
 };
 
 exp:    exp TOK_MAS exp {
