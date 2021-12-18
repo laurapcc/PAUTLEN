@@ -1,5 +1,5 @@
 main {
-    int x;
+    int x[98];
     x = 8;
     printf x;
 }

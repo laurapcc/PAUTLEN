@@ -18,9 +18,9 @@ void yyerror(const char *s);
 /** GLOBAL VARIABLES **/
 symbols_table *table;
 
-int tipo_actual; /* INT or BOOLEAN */
-int clase_actual; /* ESCALAR or VECTOR */
-int tamanio = 1;
+int tipo_actual = ERROR; /* INT or BOOLEAN */
+int clase_actual = ERROR; /* ESCALAR or VECTOR */
+int tamanio_vector_actual = ERROR;
 int funcion_retorno = 0;
 int funcion_tipo;
 int num_total_parametros = 0;
@@ -106,6 +106,7 @@ int num_arg_funcion = 0;
 programa: inicioTabla TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones write_before_main funciones  write_inicio_main sentencias TOK_LLAVEDERECHA  {
     fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
     escribir_fin(yyout);
+    delete_table(table);
 
     /*
     tipo_atributos t;
@@ -173,8 +174,14 @@ tipo:   TOK_INT {
     tipo_actual = BOOLEAN;
 };
 
-clase_vector:   TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO {
+clase_vector:   TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO TOK_CONSTANTE_ENTERA TOK_CORCHETEDERECHO {
     fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");
+    tamanio_vector_actual = $4.valor_entero;
+    if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)) {
+        printf("****Error semantico en lin %d: El tamanyo del vector %s excede los limites permitidos (1,64).\n", yline, $1.lexema);
+        delete_table(table);
+        return ERROR;
+    }
 };
 
 identificadores:    identificador {
@@ -388,7 +395,7 @@ identificador:  TOK_IDENTIFICADOR {
     fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
     symbol * s = search_current_scope(table, $1.lexema);
     if (s != NULL) {
-        printf("****Error semantico en lin %d: Declaracion duplicada.\n", yline);
+        semantic_error("Declaracion duplicada.");
         return ERROR;
     } 
 
@@ -405,10 +412,16 @@ void yyerror(const char *s){
 
     if(!err_morf){
         printf("****Error sintactico en [lin %d, col %d]\n", yline, ycol);
+        delete_table(table);
         return;
     }
 
     err_morf = 0;
+    delete_table(table);
     return;
 }
 
+void semantic_error(char * message) {
+    printf("****Error semantico en lin %d: %s\n", yline, message);
+    delete_table(table);
+}
