@@ -13,21 +13,22 @@ extern int yyleng;
 
 int yylex();
 void yyerror(const char *s);
+void semantic_error(char * message);
 
 
 /** GLOBAL VARIABLES **/
 symbols_table *table;
 
-int tipo_actual = ERROR; /* INT or BOOLEAN */
-int clase_actual = ERROR; /* ESCALAR or VECTOR */
-int tamanio_vector_actual = ERROR;
+int tipo_actual; /* INT or BOOLEAN */
+int clase_actual; /* ESCALAR or VECTOR */
+int tamanio_vector_actual = 1;
 int funcion_retorno = 0;
 int funcion_tipo;
 int num_total_parametros = 0;
 int num_total_var_locales = 0;
 int etiqueta = 0;
 int dentro_fun = 0; /* 1 si estamos dentro de la llamada de una funcion */
-int pos_parametro; /* solo para elementos de tipo parametro */ 
+int pos_parametro = 0; /* solo para elementos de tipo parametro */ 
 int pos_var_local = 0; /* solo para variables locales */
 int num_arg_funcion = 0;
 
@@ -94,6 +95,9 @@ int num_arg_funcion = 0;
 %type <atributos> constante_entera
 %type <atributos> constante_logica
 %type <atributos> identificador
+%type <atributos> funcion
+%type <atributos> fn_declaration
+%type <atributos> fn_name
 
 
 %left TOK_IGUAL TOK_MENORIGUAL TOK_MENOR TOK_MAYORIGUAL TOK_MAYOR TOK_DISTINTO
@@ -178,8 +182,9 @@ clase_vector:   TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO TOK_CONSTANTE_ENTERA TOK_CO
     fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");
     tamanio_vector_actual = $4.valor_entero;
     if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)) {
-        printf("****Error semantico en lin %d: El tamanyo del vector %s excede los limites permitidos (1,64).\n", yline, $1.lexema);
-        delete_table(table);
+        char err[MAX_ERROR];
+        sprintf(err, "El tamanyo del vector %s excede los limites permitidos (1,64).\n", $1.lexema);
+        semantic_error(err);
         return ERROR;
     }
 };
@@ -198,8 +203,62 @@ funciones:  funcion funciones {
     fprintf(yyout, ";R21:\t<funciones> ::= \n");
 };
 
-funcion: TOK_FUNCTION tipo identificadores TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA {
+funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
     fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
+    if (funcion_retorno < 1){
+        char err[MAX_ERROR];
+        sprintf(err, "Funcion %s sin sentencia de retorno.\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    close_scope(table);
+    symbol *sym;
+    sym = search_local_global(table, $1.lexema);
+    if (sym == NULL){
+        printf("****Error en la tabla de simbolos.\n");
+        delete_table(table);
+        return ERROR;
+    }
+    sym->num_params = num_total_parametros;
+    sym->type = funcion_tipo;
+    num_total_parametros = 0;
+    num_total_var_locales = 0;
+    pos_parametro = 0;
+};
+
+fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion {
+    symbol *sym;
+    sym = search_local_global(table, $1.lexema);
+    if (sym == NULL){
+        printf("****Error en la tabla de simbolos.\n");
+        delete_table(table);
+        return ERROR;
+    }
+    sym->num_params = num_total_parametros;
+    sym->num_locals = num_total_var_locales;
+    sym->type = funcion_tipo;
+    strcpy($$.lexema, $1.lexema);
+    declararFuncion(yyout, $1.lexema, num_total_var_locales);
+};
+
+fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
+    /* la funcion no existe, por lo que la insertamos en la tabla */
+    if (search_local_global(table, $3.lexema) == NULL){
+        strcpy($$.lexema, $3.lexema);
+        declare_function(table, $3.lexema, $3.valor_entero, FUNCION, 0, tipo_actual, 0, 0,0,0,0);
+        tamanio_vector_actual = 1;
+        num_total_var_locales = 0;
+        pos_parametro = 0;
+        num_total_parametros = 0;
+        funcion_retorno = 0;
+        funcion_tipo = tipo_actual;
+    }
+    /* la funcion ya existe, error */
+    else{
+        semantic_error("Declaracion duplicada.\n");
+        return ERROR;
+    }
+
 };
 
 parametros_funcion: parametro_funcion resto_parametros_funcion {
@@ -216,8 +275,24 @@ resto_parametros_funcion:   TOK_PUNTOYCOMA parametro_funcion resto_parametros_fu
     fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n");
 };
 
-parametro_funcion:  tipo identificador {
+parametro_funcion:  tipo idpf {
     fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n");
+    num_total_parametros++;
+    pos_parametro++;
+};
+
+idpf: TOK_IDENTIFICADOR {
+    if (search_current_scope(table, $1.lexema) == NULL){
+        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, 0,0,0,0,pos_parametro) == ERROR){
+            printf("****Error en la tabla de simbolos.\n");
+            delete_table(table);
+            return ERROR;
+        }
+    }
+    else{
+        semantic_error("Declaracion duplicada.\n");
+        return ERROR;
+    }
 };
 
 declaraciones_funcion:  declaraciones {
@@ -261,12 +336,52 @@ bloque: condicional {
     fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n");
 };
 
-asignacion: identificador TOK_ASIGNACION exp {
+asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
     fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
-    $1.valor_entero = $3.valor_entero;
+    symbol *sym;
+    if ((sym = search_local_global(table, $1.lexema)) == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    if (sym->classs == VECTOR){
+        semantic_error("Asignacion incompatible.\n");
+        return ERROR;
+    }
+    if (sym->category == FUNCION){
+        semantic_error("Asignacion incompatible.\n");
+        return ERROR;
+    }
+    if (sym->type != $3.tipo){
+        semantic_error("Asignacion incompatible.\n");
+        return ERROR;
+    }
+    if (actual_scope(table) == GLOBAL){
+        asignar(yyout, $1.lexema, $3.es_direccion);
+    }else{
+        escribirVariableLocal(yyout, sym->pos_local);
+        asignarDestinoEnPila(yyout, $3.es_direccion);
+    }
 }
             | elemento_vector TOK_ASIGNACION exp {
     fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");
+    symbol *sym;
+    if ((sym = search_local_global(table, $1.lexema)) == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    if ($1.tipo != $3.tipo){
+        semantic_error("Asignacion incompatible.\n");
+        return ERROR;
+    }
+    char aux[MAX_TAMANIO_VECTOR];
+    sprintf(aux, "%d", $1.valor_entero);
+    escribir_operando(yyout, aux, 0);
+    escribir_elemento_vector(yyout, sym->id, sym->size, $3.es_direccion);
+    asignarDestinoEnPila(yyout, $3.es_direccion);
 };
 
 elemento_vector:    identificador  TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {

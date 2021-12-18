@@ -3,6 +3,7 @@
 
 #define MAX_ID_LENGTH 100
 #define MAX_TAMANIO_VECTOR 64
+#define MAX_ERROR 200
 
 #define NOT_FOUND -1
 #define ERROR -1
