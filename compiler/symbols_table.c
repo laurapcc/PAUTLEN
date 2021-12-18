@@ -313,7 +313,6 @@ void insert_print_file(symbols_table * table, FILE * fout, char * id, int type){
 void search_print_file(symbols_table * table, FILE * fout, char * id){
     symbol * s = search_local_global(table, id);
     if(s == NULL) {
-        fprintf(stdout, "Symbol with id %s not found, %d\n", id, s);
         fprintf(fout, "%s\t-1\n", id);
         return;
     }
