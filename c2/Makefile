@@ -34,19 +34,24 @@ generacion.o: $(CODE_GENERATION_DIR)/generacion.c
 	$(CC) $(CFLAGS) -c $^
 
 test1:
-	./compiler $(SYNTACTIC_DIR)/entrada_sin_1.txt $(SYNTACTIC_DIR)/output_sin_1.txt
+	./compiler $(SYNTACTIC_DIR)/entrada_sin_1.txt $(SYNTACTIC_DIR)/output_sin_1.asm
 
 test_basico:
-	./compiler $(SYNTACTIC_DIR)/entrada_basica.txt $(SYNTACTIC_DIR)/output_basico.txt
+	./compiler $(SYNTACTIC_DIR)/entrada_basica.txt $(SYNTACTIC_DIR)/output_basico.asm
 
+test_basico_nasm:
+	nasm -g -o $(SYNTACTIC_DIR)/output_basico.o -f elf32 $(SYNTACTIC_DIR)/output_basico.asm
+	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/basico $(SYNTACTIC_DIR)/output_basico.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(SYNTACTIC_DIR)/basico
 
 clean: 
-	rm -rf *.o compiler *.gch
+	rm -rf *.o 
+	rm -rf compiler *.gch 
 	rm -rf output_sin_1.txt output_sin_2.txt output_sin_3.txt output_sin_4.txt output_sin_5.txt
 	rm -rf y.output y.tab.c y.tab.h lex.yy.c
 
 clean_output: 
 	rm -rf $(SYMBOLS_DIR)/mi_salida.txt $(CODE_GENERATION_DIR)/ex1.asm
-	rm -rf $(SYNTACTIC_DIR)/output_sin_1.txt $(SYNTACTIC_DIR)/output_basico.txt
+	rm -rf $(SYNTACTIC_DIR)/output_sin_1.asm $(SYNTACTIC_DIR)/output_basico.asm $(SYNTACTIC_DIR)/basico $(SYNTACTIC_DIR)/output_basico.o
 
 clean_all: clean clean_output

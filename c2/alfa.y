@@ -138,16 +138,11 @@ inicioTabla: {
         printf("ERRROR: Error when creating the table.\n");
         return ERROR;
     }
+    escribir_subseccion_data(yyout);
+    escribir_cabecera_bss(yyout);
 };
 
 write_before_main: {
-    escribir_subseccion_data(yyout);
-    escribir_cabecera_bss(yyout);
-    /* ESCRITURA VARIABLES EN TABLA DE SIMBOLOS
-    declarar_variable(salida, "x", ENTERO, 1);
-    declarar_variable(salida, "y", ENTERO, 1);
-    declarar_variable(salida, "z", ENTERO, 1);
-    */
     escribir_segmento_codigo(yyout);
 };
 
@@ -798,8 +793,10 @@ identificador:  TOK_IDENTIFICADOR {
         if (clase_actual == VECTOR) {
             declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, tamanio_vector_actual);
         } else {
+            tamanio_vector_actual = 1;
             declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
         }
+        declarar_variable(yyout, $1.lexema, tipo_actual, tamanio_vector_actual);
     } else { // local scope
         if (clase_actual != ESCALAR) {
             semantic_error("Variable local de tipo no escalar.");
