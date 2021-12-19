@@ -121,15 +121,6 @@ programa: inicioTabla TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones write_before_mai
     fprintf(yyout,";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
     escribir_fin(yyout);
     delete_table(table);
-
-    /*
-    tipo_atributos t;
-    t.tipo = BOOLEAN;
-    fprintf(yyout,"Tipo: %d\n", t.tipo);
-    fprintf(yyout,"MAX_TAMANIO_VECTOR: %d\n", MAX_TAMANIO_VECTOR);
-    symbol * s = new_symbol("simbolooo", 99, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR, ERROR);
-    print_symbol(yyout, s);
-    */
 };
 
 inicioTabla: {
@@ -596,6 +587,7 @@ exp:    exp TOK_MAS exp {
     $$.es_direccion = 1;
     $$.valor_entero = $1.valor_entero;
     //TODO: llamar a funcion de generacion.c pero no se cual
+    escribir_operando(yyout,$1.lexema,1);
 }
         | constante {
     fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
