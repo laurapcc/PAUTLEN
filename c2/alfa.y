@@ -610,8 +610,8 @@ identificador:  TOK_IDENTIFICADOR {
             return ERROR;
         }
         declare_local(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
-        pos_variable_local_actual++;
-        num_variables_locales_actual++;
+        pos_var_local++;
+        num_total_var_locales++;
     }
 };
 
