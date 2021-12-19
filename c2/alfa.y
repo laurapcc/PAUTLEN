@@ -235,6 +235,7 @@ fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESI
     sym->type = funcion_tipo;
     strcpy($$.lexema, $1.lexema);
     declararFuncion(yyout, $1.lexema, num_total_var_locales);
+
 };
 
 fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
@@ -474,7 +475,7 @@ escritura:  TOK_PRINTF exp {
 
 retorno_funcion:    TOK_RETURN exp {
     fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
-    if (dentro_fun == 0) {
+    if (actual_scope(table) != LOCAL) {
         semantic_error("Sentencia de retorno fuera del cuerpo de una función.\n");
         return ERROR;
     }
@@ -491,6 +492,7 @@ exp:    exp TOK_MAS exp {
     fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
     if ($1.tipo != INT || $3.tipo != INT){
         semantic_error("Operacion aritmetica con operandos boolean.\n");
+        printf("$1.tipo: %d, $3.tipo; %d\n", $1.tipo, $3.tipo);
         return ERROR;
     }
     $$.tipo = INT;
@@ -578,16 +580,30 @@ exp:    exp TOK_MAS exp {
         semantic_error(err);
         return ERROR;
     }
-    int cat = symbol_get_category(sym);
-    if (cat == FUNCION || cat == VECTOR){
+    if (symbol_get_category(sym) == FUNCION){
         semantic_error("-- No se que error poner --");
         return ERROR;
     }
-    $$.tipo = cat;
+    if (symbol_get_classs(sym) == VECTOR){
+        semantic_error("-- No se que error poner --");
+        return ERROR;
+    }
+    $$.tipo = symbol_get_type(sym);
     $$.es_direccion = 1;
     $$.valor_entero = $1.valor_entero;
+
     //TODO: llamar a funcion de generacion.c pero no se cual
-    escribir_operando(yyout,$1.lexema,1);
+    if (sym->category == VARIABLE) {
+        escribir_operando(yyout, $1.lexema, 1);
+        if(en_explist == 1) {
+            operandoEnPilaAArgumento(yyout, 1);
+        }
+    } else if (sym->category == PARAMETRO) {
+        escribirParametro(yyout, sym->pos_param, num_total_parametros);
+    } else {
+        semantic_error("-- No se que error poner --");
+        return ERROR;
+    }
 }
         | constante {
     fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
