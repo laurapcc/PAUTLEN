@@ -31,6 +31,7 @@ int dentro_fun = 0; /* 1 si estamos dentro de la llamada de una funcion */
 int pos_parametro = 0; /* solo para elementos de tipo parametro */ 
 int pos_var_local = 0; /* solo para variables locales */
 int num_arg_funcion = 0;
+int cuantos_no = 0;
 
 // para las funciones
 int en_explist = 0; /* 1 si la actual llamada a funcion es parametro de llamada a funcion*/
@@ -366,7 +367,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
         semantic_error("Asignacion incompatible.\n");
         return ERROR;
     }
-    if (actual_xscope(table) == GLOBAL){
+    if (actual_scope(table) == GLOBAL){
         asignar(yyout, $1.lexema, $3.es_direccion);
     }else{
         escribirVariableLocal(yyout, sym->pos_local);
@@ -579,7 +580,8 @@ exp:    exp TOK_MAS exp {
     }
     $$.tipo = BOOLEAN;
     $$.es_direccion = 0;
-    y(yyout, $2.es_direccion);
+    no(yyout, $2.es_direccion, cuantos_no);
+    cuantos_no++;
 }
         | TOK_IDENTIFICADOR {
     fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
@@ -604,6 +606,7 @@ exp:    exp TOK_MAS exp {
     fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
     $$.tipo = $1.tipo;
     $$.es_direccion = $1.es_direccion;
+    $$.valor_entero = $1.valor_entero;
 }
         | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
@@ -636,6 +639,8 @@ exp:    exp TOK_MAS exp {
     en_explist = 0;
     $$.tipo = symbol_get_type(sym);
     $$.es_direccion = 0;
+    
+    llamarFuncion(yyout, symbol_get_id(sym), symbol_get_num_params(sym));
 };
 
 idf_llamada_funcion: TOK_IDENTIFICADOR {
@@ -747,22 +752,28 @@ constante:  constante_logica {
     fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
     $$.tipo = $1.tipo;
     $$.es_direccion = $1.es_direccion;
+    $$.valor_entero = $1.valor_entero;
 }
             | constante_entera {
     fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");
     $$.tipo = $1.tipo;
     $$.es_direccion = $1.es_direccion;
+    $$.valor_entero = $1.valor_entero;
 };
 
 constante_logica:   TOK_TRUE {
     fprintf(yyout, ";R102:\t<constante_logica> ::= true\n");
     $$.tipo = BOOLEAN;
     $$.es_direccion = 0;
+    $$.valor_entero = 1;
+    escribir_operando(yyout, "0", 0);
 }
                     | TOK_FALSE {
     fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");
     $$.tipo = BOOLEAN;
     $$.es_direccion = 0;
+    $$.valor_entero = 0;
+    escribir_operando(yyout, "1", 0);
 };
 
 constante_entera:   TOK_CONSTANTE_ENTERA {
@@ -770,7 +781,9 @@ constante_entera:   TOK_CONSTANTE_ENTERA {
     $$.tipo = INT;
     $$.es_direccion = 0;
     $$.valor_entero = $1.valor_entero;
-
+    char buf[MAX_ERROR];
+    sprintf(buf, "%d", $1.valor_entero);
+    escribir_operando(yyout, buf, 0);
 };
 
 identificador:  TOK_IDENTIFICADOR {
