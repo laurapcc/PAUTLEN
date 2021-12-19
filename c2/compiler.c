@@ -81,8 +81,8 @@ int main (int argc, char** argv){
     }
 
     // check that imports are correctly working
-    check_symbols_table();
-    check_code_generation();
+    //check_symbols_table();
+    //check_code_generation();
 
 
     yyparse();
@@ -91,6 +91,5 @@ int main (int argc, char** argv){
     fclose(yyout);
 
     
-
-    return 0;
+    exit(EXIT_SUCCESS);
 }

@@ -192,8 +192,8 @@ symbol * search_local_global(symbols_table * table, char* id) {
 int insert_hash_symbol(Hash_Table * table, symbol * s) {
     /* If the symbol already exists in the table: error */
     if (search_hash_symbol(table, s->id) != NULL){ 
-        fprintf(stderr, "ERROR: The symbol to be inserted is already in the table: ");
-        print_symbol(stderr, s);
+        //fprintf(stderr, "ERROR: The symbol to be inserted is already in the table: ");
+        //print_symbol(stderr, s);
         return ERROR; 
     }
 
@@ -210,7 +210,7 @@ int insert_hash_symbol(Hash_Table * table, symbol * s) {
 int declare_local(symbols_table * table, char* id, int value, int category, int classs,
     int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
     if(!(table -> exists_local)) { 
-        fprintf(stderr, "ERROR: exists_local is False, id: %s, value: %d.\n", id, value);
+        //fprintf(stderr, "ERROR: exists_local is False, id: %s, value: %d.\n", id, value);
         return ERROR; 
     } else if(!table->local_table) { 
         fprintf(stderr, "ERROR: local table is null.\n");
