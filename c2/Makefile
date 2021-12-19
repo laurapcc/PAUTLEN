@@ -46,6 +46,7 @@ clean:
 	rm -rf y.output y.tab.c y.tab.h lex.yy.c
 
 clean_output: 
-	rm -rf $(SYMBOLS_DIR)/mi_salida.txt $(SYNTACTIC_DIR)/output_sin_1.txt $(CODE_GENERATION_DIR)/ex1.asm
+	rm -rf $(SYMBOLS_DIR)/mi_salida.txt $(CODE_GENERATION_DIR)/ex1.asm
+	rm -rf $(SYNTACTIC_DIR)/output_sin_1.txt $(SYNTACTIC_DIR)/output_basico.txt
 
 clean_all: clean clean_output

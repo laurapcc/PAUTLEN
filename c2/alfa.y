@@ -19,9 +19,9 @@ void semantic_error(char * message);
 /** GLOBAL VARIABLES **/
 symbols_table *table;
 
-int tipo_actual; /* INT or BOOLEAN */
-int clase_actual; /* ESCALAR or VECTOR */
-int tamanio_vector_actual = 1;
+int tipo_actual = ERROR; /* INT or BOOLEAN */
+int clase_actual = ERROR; /* ESCALAR or VECTOR */
+int tamanio_vector_actual = ERROR;
 int funcion_retorno = 0;
 int funcion_tipo;
 int num_total_parametros = 0;
@@ -232,7 +232,7 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
 
 fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion {
     symbol *sym;
-    sym = search_local_global(table, $1.lexema);
+    sym = search_local(table, $1.lexema);
     if (sym == NULL){
         printf("****Error en la tabla de simbolos.\n");
         delete_table(table);
@@ -249,7 +249,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
     /* la funcion no existe, por lo que la insertamos en la tabla */
     if (search_local_global(table, $3.lexema) == NULL){
         strcpy($$.lexema, $3.lexema);
-        declare_function(table, $3.lexema, $3.valor_entero, FUNCION, 0, tipo_actual, 0, 0,0,0,0);
+        declare_function(table, $3.lexema, $3.valor_entero, FUNCION, ERROR, tipo_actual, ERROR, 0, 0, 0, ERROR, ERROR);
         tamanio_vector_actual = 1;
         num_total_var_locales = 0;
         pos_parametro = 0;
@@ -287,7 +287,7 @@ parametro_funcion:  tipo idpf {
 
 idpf: TOK_IDENTIFICADOR {
     if (search_current_scope(table, $1.lexema) == NULL){
-        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, 0,0,0,0,pos_parametro) == ERROR){
+        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, ERROR, ERROR, ERROR, ERROR, pos_parametro, ERROR) == ERROR){
             printf("****Error en la tabla de simbolos.\n");
             delete_table(table);
             return ERROR;
@@ -599,9 +599,19 @@ identificador:  TOK_IDENTIFICADOR {
     } 
 
     if(actual_scope(table) == GLOBAL) {
-        declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR);
+        if (clase_actual == VECTOR) {
+            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, tamanio_vector_actual);
+        } else {
+            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
+        }
     } else { // local scope
-        declare_local(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR);
+        if (clase_actual != ESCALAR) {
+            semantic_error("Variable local de tipo no escalar.");
+            return ERROR;
+        }
+        declare_local(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
+        pos_variable_local_actual++;
+        num_variables_locales_actual++;
     }
 };
 

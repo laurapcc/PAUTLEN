@@ -20,6 +20,7 @@ typedef struct _symbol {
     int pos_local; /* position of local variable */
     int num_params; /* number of parameters */
     int pos_param; /* position of parameter */
+    int vector_len; /* number of elements if vector */
 } symbol;
 
 typedef struct _hash_table {
@@ -32,7 +33,7 @@ typedef struct _hash_table {
 /* SYMBOL STRUCTURE MANIPULATION FUNCTIONS */
 
 symbol * new_symbol(char* id, int value, int category, int classs, int type, int size, 
-    int num_locals, int  pos_local, int num_params, int pos_param);
+    int num_locals, int  pos_local, int num_params, int pos_param, int vector_len);
 void destroy_symbol(symbol * s);
 void print_symbol(FILE * f, symbol * s);
 
@@ -46,6 +47,7 @@ void symbol_set_num_locals(symbol * s, int num_locals);
 void symbol_set_pos_local(symbol * s, int pos_local);
 void symbol_set_num_params(symbol * s, int num_params);
 void symbol_set_pos_param(symbol * s, int pos_param);
+void symbol_set_vector_len(symbol * s, int vector_len);
 void symbol_inc_num_locals(symbol * s);
 void symbol_inc_num_params(symbol * s);
 
@@ -59,6 +61,7 @@ int symbol_get_num_locals(symbol * s);
 int symbol_get_pos_local(symbol * s);
 int symbol_get_num_params(symbol * s);
 int symbol_get_pos_param(symbol * s);
+int symbol_get_vector_len(symbol * s);
 
 
 
@@ -92,18 +95,18 @@ symbol * search_local_global(symbols_table * table, char* id);
 int insert_hash_symbol(Hash_Table * table, symbol * s);
 /* Creates and inserts a symbol in the local symbol table. */
 int declare_local(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len);
 /* Creates and inserts a symbol in the global symbol table. */
 int declare_global(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len);
 /* Creates and inserts a symbol in the current scope. */
 int declare_current_scope(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len);
 /* Deletes the local hash table of the given symbol table. */
 int close_scope(symbols_table * table);
 /* Declares a function, creating a new local table, possibly eliminating the previous and inserting the new element. */
 int declare_function(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param);
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len);
 
 
 int handle_in_out(FILE * fin, FILE * fout);
