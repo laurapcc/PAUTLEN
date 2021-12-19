@@ -4,7 +4,7 @@
 /* SYMBOL STRUCTURE MANIPULATION FUNCTIONS */
 
 symbol * new_symbol(char* id, int value, int category, int classs, int type, int size, 
-    int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
+    int num_locals, int  pos_local, int num_params, int pos_param) {
     symbol * s = (symbol *) calloc(1, sizeof(symbol));
     if(s == NULL) {
         fprintf(stderr, "ERROR: Cannot allocate memory for new symbol with id %s", id);
@@ -26,7 +26,6 @@ symbol * new_symbol(char* id, int value, int category, int classs, int type, int
     s->pos_local = pos_local;
     s->num_params = num_params;
     s->pos_param = pos_param;
-    s->vector_len = vector_len;
 
     return s;
 }
@@ -69,7 +68,6 @@ void symbol_set_num_locals(symbol * s, int num_locals) { s->num_locals = num_loc
 void symbol_set_pos_local(symbol * s, int pos_local) { s->pos_local = pos_local; }
 void symbol_set_num_params(symbol * s, int num_params) { s->num_params = num_params; }
 void symbol_set_pos_param(symbol * s, int pos_param) { s->pos_param = pos_param; }
-void symbol_set_vector_len(symbol * s, int vector_len){ s->vector_len = vector_len; }
 void symbol_inc_num_locals(symbol * s) { (s->num_locals)++; }
 void symbol_inc_num_params(symbol * s) { (s->num_params)++; }
 
@@ -83,7 +81,6 @@ int symbol_get_num_locals(symbol * s) { return s->num_locals; }
 int symbol_get_pos_local(symbol * s) { return s->pos_local; }
 int symbol_get_num_params(symbol * s) { return s->num_params; }
 int symbol_get_pos_param(symbol * s) { return s->pos_param; }
-int symbol_get_vector_len(symbol * s) { return s->vector_len; }
 
 
 
@@ -208,7 +205,7 @@ int insert_hash_symbol(Hash_Table * table, symbol * s) {
 
 /* Creates and inserts a symbol in the local symbol table. */
 int declare_local(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
     if(!(table -> exists_local)) { 
         //fprintf(stderr, "ERROR: exists_local is False, id: %s, value: %d.\n", id, value);
         return ERROR; 
@@ -217,7 +214,7 @@ int declare_local(symbols_table * table, char* id, int value, int category, int 
         return ERROR; 
     }
 
-    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param, vector_len);
+    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
     if(s == NULL) {
         fprintf(stderr, "ERROR: Error when initializing symbol.\n");
         return ERROR;
@@ -228,13 +225,13 @@ int declare_local(symbols_table * table, char* id, int value, int category, int 
 
 /* Creates and inserts a symbol in the global symbol table. */
 int declare_global(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
     if(!table->global_table) { 
         fprintf(stderr, "ERROR: global table is null.\n");
         return ERROR; 
     }
 
-    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param, vector_len);
+    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
     if(s == NULL) {
         fprintf(stderr, "ERROR: Error when initializing symbol.\n");
         return ERROR;
@@ -245,11 +242,11 @@ int declare_global(symbols_table * table, char* id, int value, int category, int
 
 /* Creates and inserts a symbol in the current scope. */
 int declare_current_scope(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
     if (table->exists_local) {
-        return declare_local(table, id, value, category, classs, type, size, num_locals,  pos_local, num_params, pos_param, vector_len);
+        return declare_local(table, id, value, category, classs, type, size, num_locals,  pos_local, num_params, pos_param);
     } else {
-        return declare_global(table, id, value, category, classs, type, size, num_locals,  pos_local, num_params, pos_param, vector_len);
+        return declare_global(table, id, value, category, classs, type, size, num_locals,  pos_local, num_params, pos_param);
     }
 }
 
@@ -268,9 +265,9 @@ int close_scope(symbols_table * table) {
 
 /* Declares a function, creating a new local table, possibly eliminating the previous and inserting the new element. */
 int declare_function(symbols_table * table, char* id, int value, int category, int classs,
-    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param, int vector_len) {
+    int type, int size, int num_locals, int  pos_local, int num_params, int pos_param) {
 
-    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param, vector_len);
+    symbol * s = new_symbol(id, value, category, classs, type, size, num_locals, pos_local, num_params, pos_param);
     if(s == NULL) {
         fprintf(stderr, "ERROR: Error when initializing new symbol.\n");
         return ERROR;
@@ -318,7 +315,7 @@ void insert_print_file(symbols_table * table, FILE * fout, char * id, int type){
         }
     }
     else if (type < -1) {
-        if (declare_function(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
+        if (declare_function(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
             fprintf(fout, "-1\t%s\n", id);
         }
         else {
@@ -326,8 +323,8 @@ void insert_print_file(symbols_table * table, FILE * fout, char * id, int type){
         }
     }
     else {
-        if (declare_local(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
-            if (declare_global(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
+        if (declare_local(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
+            if (declare_global(table, id, type, -1, -1, -1, -1, -1, -1, -1, -1) == ERROR) {
                 fprintf(fout, "-1\t%s\n", id);
             } else {
                 fprintf(fout, "%s\n", id);

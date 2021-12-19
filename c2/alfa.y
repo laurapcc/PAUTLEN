@@ -242,7 +242,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
     /* la funcion no existe, por lo que la insertamos en la tabla */
     if (search_local_global(table, $3.lexema) == NULL){
         strcpy($$.lexema, $3.lexema);
-        declare_function(table, $3.lexema, $3.valor_entero, FUNCION, ERROR, tipo_actual, ERROR, 0, 0, 0, ERROR, ERROR);
+        declare_function(table, $3.lexema, $3.valor_entero, FUNCION, ERROR, tipo_actual, ERROR, 0, 0, 0, ERROR);
         tamanio_vector_actual = 1;
         num_total_var_locales = 0;
         pos_parametro = 0;
@@ -280,7 +280,8 @@ parametro_funcion:  tipo idpf {
 
 idpf: TOK_IDENTIFICADOR {
     if (search_current_scope(table, $1.lexema) == NULL){
-        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, ERROR, ERROR, ERROR, ERROR, pos_parametro, ERROR) == ERROR){
+        clase_actual = ESCALAR;
+        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, ERROR, ERROR, ERROR, ERROR, pos_parametro) == ERROR){
             printf("****Error en la tabla de simbolos.\n");
             delete_table(table);
             return ERROR;
@@ -392,8 +393,10 @@ elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERE
         semantic_error(err);
         return ERROR;
     }
+    printf("SYMBOL SIZE; %d, lexema: %s\n\n", symbol_get_size(sym), $1.lexema);
+    print_symbol(stdout, sym);
     // identificador corresponde con la declaracion de un vector
-    if (symbol_get_category(sym) != VECTOR){
+    if (symbol_get_classs(sym) != VECTOR){
         semantic_error("Intento de indexacion de una variable que no es de tipo vector.\n");
         return ERROR;
     }
@@ -459,8 +462,11 @@ lectura:    TOK_SCANF TOK_IDENTIFICADOR {
         semantic_error(err);
         return ERROR;
     }
-    int cat = symbol_get_category(sym);
-    if (cat == FUNCION || cat == VECTOR){
+    if (symbol_get_category(sym) == FUNCION){
+        semantic_error("-- No se que error poner --");
+        return ERROR;
+    }
+    if (symbol_get_classs(sym) == VECTOR){
         semantic_error("-- No se que error poner --");
         return ERROR;
     }
@@ -580,6 +586,7 @@ exp:    exp TOK_MAS exp {
         semantic_error(err);
         return ERROR;
     }
+
     if (symbol_get_category(sym) == FUNCION){
         semantic_error("-- No se que error poner --");
         return ERROR;
@@ -594,9 +601,19 @@ exp:    exp TOK_MAS exp {
 
     //TODO: llamar a funcion de generacion.c pero no se cual
     if (sym->category == VARIABLE) {
-        escribir_operando(yyout, $1.lexema, 1);
-        if(en_explist == 1) {
-            operandoEnPilaAArgumento(yyout, 1);
+        if(actual_scope(table) == LOCAL) {
+            // if inside function don't push a local identifier
+            char buf[MAX_ERROR];
+            sprintf(buf, "%d", $1.valor_entero);
+            printf("SE va a escribir un %d\n\n", $1.valor_entero);
+            escribir_operando(yyout, buf, 0);
+        } else {
+            printf("SE va a escribir un %s\n\n", $1.lexema);
+            print_symbol(stdout, sym);
+            escribir_operando(yyout, $1.lexema, 1);
+            if(en_explist == 1) {
+                operandoEnPilaAArgumento(yyout, 1);
+            }
         }
     } else if (sym->category == PARAMETRO) {
         escribirParametro(yyout, sym->pos_param, num_total_parametros);
@@ -799,10 +816,11 @@ identificador:  TOK_IDENTIFICADOR {
 
     if(actual_scope(table) == GLOBAL) {
         if (clase_actual == VECTOR) {
-            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, tamanio_vector_actual);
+            printf("Tamaño vect actual: %d, lexema: %s\n\n", tamanio_vector_actual, $1.lexema);
+            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, tamanio_vector_actual, ERROR, pos_var_local, ERROR, ERROR);
         } else {
             tamanio_vector_actual = 1;
-            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
+            declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR);
         }
         declarar_variable(yyout, $1.lexema, tipo_actual, tamanio_vector_actual);
     } else { // local scope
@@ -810,7 +828,7 @@ identificador:  TOK_IDENTIFICADOR {
             semantic_error("Variable local de tipo no escalar.");
             return ERROR;
         }
-        declare_local(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR, ERROR);
+        declare_local(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, ERROR);
         pos_var_local++;
         num_total_var_locales++;
     }
