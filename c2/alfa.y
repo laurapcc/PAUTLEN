@@ -32,6 +32,10 @@ int pos_parametro = 0; /* solo para elementos de tipo parametro */
 int pos_var_local = 0; /* solo para variables locales */
 int num_arg_funcion = 0;
 
+// para las funciones
+int en_explist = 0; /* 1 si la actual llamada a funcion es parametro de llamada a funcion*/
+int num_parametros_llamada_actual = 0; 
+
 
 %}
 
@@ -102,6 +106,7 @@ int num_arg_funcion = 0;
 %type <atributos> if_else_exp
 %type <atributos> bucle_exp
 %type <atributos> while
+%type <atributos> idf_llamada_funcion
 
 
 %left TOK_IGUAL TOK_MENORIGUAL TOK_MENOR TOK_MAYORIGUAL TOK_MAYOR TOK_DISTINTO
@@ -217,7 +222,7 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
     }
     close_scope(table);
     symbol *sym;
-    sym = search_local_global(table, $1.lexema);
+    sym = search_global(table, $1.lexema);
     if (sym == NULL){
         printf("****Error en la tabla de simbolos.\n");
         delete_table(table);
@@ -361,7 +366,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
         semantic_error("Asignacion incompatible.\n");
         return ERROR;
     }
-    if (actual_scope(table) == GLOBAL){
+    if (actual_xscope(table) == GLOBAL){
         asignar(yyout, $1.lexema, $3.es_direccion);
     }else{
         escribirVariableLocal(yyout, sym->pos_local);
@@ -388,7 +393,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
     asignarDestinoEnPila(yyout, $3.es_direccion);
 };
 
-elemento_vector:    identificador  TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
+elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
     fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");
     // identificador existe en la tabla
     symbol *sym = NULL;
@@ -456,7 +461,7 @@ while: TOK_WHILE {
     while_inicio(yyout, $$.etiqueta);
 };
 
-lectura:    TOK_SCANF identificador {
+lectura:    TOK_SCANF TOK_IDENTIFICADOR {
     fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");
     symbol *sym = NULL;
     sym = search_local_global(table, $2.lexema);
@@ -497,50 +502,167 @@ retorno_funcion:    TOK_RETURN exp {
 
 exp:    exp TOK_MAS exp {
     fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT){
+        semantic_error("Operacion aritmetica con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    sumar(yyout, $1.es_direccion, $3.es_direccion);
 }
         | exp TOK_MENOS exp {
     fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT){
+        semantic_error("Operacion aritmetica con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    restar(yyout, $1.es_direccion, $3.es_direccion);
 }
         | exp TOK_DIVISION exp {
     fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT){
+        semantic_error("Operacion aritmetica con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    dividir(yyout, $1.es_direccion, $3.es_direccion);
 }
         | exp TOK_ASTERISCO exp {
     fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT){
+        semantic_error("Operacion aritmetica con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    multiplicar(yyout, $1.es_direccion, $3.es_direccion);
 }
         | TOK_MENOS exp {
     fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n");
+    if ($2.tipo != INT){
+        semantic_error("Operacion aritmetica con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    cambiar_signo(yyout, $2.es_direccion);
 }
         | exp TOK_AND exp {
     fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n");
+    if ($1.tipo != BOOLEAN || $3.tipo != BOOLEAN){
+        semantic_error("Operacion logica con operandos int.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    y(yyout, $1.es_direccion, $3.es_direccion);
+    
 }
         | exp TOK_OR exp {
     fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n");
+    if ($1.tipo != BOOLEAN || $3.tipo != BOOLEAN){
+        semantic_error("Operacion logica con operandos int.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    o(yyout, $1.es_direccion, $3.es_direccion);
 }
         | TOK_NOT exp {
     fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n");
+    if ($2.tipo != BOOLEAN){
+        semantic_error("Operacion logica con operandos int.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    y(yyout, $2.es_direccion);
 }
-        | identificador {
+        | TOK_IDENTIFICADOR {
     fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
+    symbol *sym;
+    if ((sym = search_local_global(table, $1.lexema)) == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    int cat = symbol_get_category(sym);
+    if (cat == FUNCION || cat == VECTOR){
+        semantic_error("-- No se que error poner --");
+        return ERROR;
+    }
+    $$.tipo = cat;
+    $$.es_direccion = 1;
     $$.valor_entero = $1.valor_entero;
+    //TODO: llamar a funcion de generacion.c pero no se cual
 }
         | constante {
     fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
+    $$.tipo = $1.tipo;
+    $$.es_direccion = $1.es_direccion;
 }
         | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
+    $$.tipo = $2.tipo;
+    $$.es_direccion = $2.es_direccion;
 }
         | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {
     fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");
+    $$.tipo = $2.tipo;
+    $$.es_direccion = $2.es_direccion;
 }
         | elemento_vector {
     fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");
+    $$.tipo = $1.tipo;
+    $$.es_direccion = $1.es_direccion;
 }
-        | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {
+        | idf_llamada_funcion TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {
     fprintf(yyout, ";R88:\t<exp> ::= <identificador>( <lista_expresiones> )\n");
+    symbol *sym;
+    if ((sym = search_local_global(table, $1.lexema)) == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    if (num_parametros_llamada_actual != symbol_get_num_params(sym)){
+        semantic_error("Numero incorrecto de parametros en llamada a funcion.\n");
+        return ERROR;
+    }
+    en_explist = 0;
+    $$.tipo = symbol_get_type(sym);
+    $$.es_direccion = 0;
+};
+
+idf_llamada_funcion: TOK_IDENTIFICADOR {
+    //! Donde llamamos a funcion (codigo de genrecion)?????
+    symbol *sym;
+    if ((sym = search_local_global(table, $1.lexema)) == NULL){
+        char err[MAX_ERROR];
+        sprintf(err, "Acceso a variable no declarada (%s).\n", $1.lexema);
+        semantic_error(err);
+        return ERROR;
+    }
+    if (symbol_get_category(sym) != FUNCION) {
+        semantic_error("-- No se que error poner--\n");
+        return ERROR;
+    }
+    if (en_explist == 1){
+        semantic_error("No esta permitido el uso de llamadas a funciones como parametros de otras funciones.\n");
+        return ERROR;
+    }
+    num_parametros_llamada_actual = 0;
+    en_explist = 1;
+    strcpy($$.lexema, $1.lexema);
 };
 
 lista_expresiones:  exp resto_lista_expresiones {
     fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");
+    num_parametros_llamada_actual++;
 }
                     | /* EMPTY */ {
     fprintf(yyout, ";R90:\t<lista_expresiones> ::=\n");
@@ -548,6 +670,7 @@ lista_expresiones:  exp resto_lista_expresiones {
 
 resto_lista_expresiones:    TOK_COMA exp resto_lista_expresiones {
     fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");
+    num_parametros_llamada_actual++;
 }
                             | /* EMPTY */ { 
     fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::=\n");
@@ -555,39 +678,99 @@ resto_lista_expresiones:    TOK_COMA exp resto_lista_expresiones {
 
 comparacion:    exp TOK_IGUAL exp {
     fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    igual(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 }
                 | exp TOK_DISTINTO exp {
     fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    distinto(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 }
                 | exp TOK_MENORIGUAL exp {
     fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    menor_igual(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 }
-                | exp TOK_MAYORIGUAL {
+                | exp TOK_MAYORIGUAL exp {
     fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    mayor_igual(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 }
                 | exp TOK_MENOR exp {
     fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    menor(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 }
                 | exp TOK_MAYOR exp {
     fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n");
+    if ($1.tipo != INT || $3.tipo != INT) {
+        semantic_error("Comparacion con operandos boolean.\n");
+        return ERROR;
+    }
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
+    mayor(yyout, $1.es_direccion, $3.es_direccion, etiqueta);
+    etiqueta++;
 };
 
 constante:  constante_logica {
     fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
+    $$.tipo = $1.tipo;
+    $$.es_direccion = $1.es_direccion;
 }
             | constante_entera {
     fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");
+    $$.tipo = $1.tipo;
+    $$.es_direccion = $1.es_direccion;
 };
 
 constante_logica:   TOK_TRUE {
     fprintf(yyout, ";R102:\t<constante_logica> ::= true\n");
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
 }
                     | TOK_FALSE {
     fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");
+    $$.tipo = BOOLEAN;
+    $$.es_direccion = 0;
 };
 
 constante_entera:   TOK_CONSTANTE_ENTERA {
     fprintf(yyout, ";R104:\t<contante_entera> ::= TOK_CONSTANTE_ENTERA\n");
+    $$.tipo = INT;
+    $$.es_direccion = 0;
+    $$.valor_entero = $1.valor_entero;
+
 };
 
 identificador:  TOK_IDENTIFICADOR {
