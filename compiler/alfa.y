@@ -281,11 +281,9 @@ parametro_funcion:  tipo idpf {
 idpf: TOK_IDENTIFICADOR {
     if (search_current_scope(table, $1.lexema) == NULL){
         clase_actual = ESCALAR;
-        if (declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, ERROR, ERROR, ERROR, ERROR, pos_parametro) == ERROR){
-            printf("****Error en la tabla de simbolos.\n");
-            delete_table(table);
-            return ERROR;
-        }
+        declare_local(table, $1.lexema, $1.valor_entero, PARAMETRO, clase_actual, tipo_actual, ERROR, ERROR, pos_var_local, ERROR, pos_parametro);
+        pos_var_local++;
+        num_total_var_locales++;
     }
     else{
         semantic_error("Declaracion duplicada.\n");
