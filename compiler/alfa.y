@@ -405,7 +405,6 @@ elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERE
     $$.es_direccion = 1;
     $$.valor_entero = $3.valor_entero;
     escribir_elemento_vector(yyout, $1.lexema, symbol_get_size(sym), $3.es_direccion);
-
     if(en_explist == 1) {
         operandoEnPilaAArgumento(yyout, 1);
     }
@@ -500,7 +499,6 @@ exp:    exp TOK_MAS exp {
     fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
     if ($1.tipo != INT || $3.tipo != INT){
         semantic_error("Operacion aritmetica con operandos boolean.\n");
-        printf("$1.tipo: %d, $3.tipo; %d\n", $1.tipo, $3.tipo);
         return ERROR;
     }
     $$.tipo = INT;
@@ -599,7 +597,7 @@ exp:    exp TOK_MAS exp {
     }
     $$.tipo = symbol_get_type(sym);
     $$.es_direccion = 1;
-    $$.valor_entero = $1.valor_entero;
+    $$.valor_entero = symbol_get_value(sym);
 
     //TODO: llamar a funcion de generacion.c pero no se cual
     if (sym->category == VARIABLE) {

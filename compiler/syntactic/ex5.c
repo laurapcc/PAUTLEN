@@ -1,6 +1,6 @@
 main {
     int m;
-    int [4] v;
+    array int[4] v;
     m = 0;
     while ( m <= 4 ){
         printf m;
