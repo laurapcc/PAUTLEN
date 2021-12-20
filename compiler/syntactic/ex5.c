@@ -3,8 +3,8 @@ main {
     int [4] v;
     m = 0;
     while ( m <= 4 ){
-    printf m;
-    v[m] = m*10;
-    m = m + 1;
+        printf m;
+        v[m] = m*10;
+        m = m + 1;
     }
 }
