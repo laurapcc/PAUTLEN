@@ -393,8 +393,6 @@ elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERE
         semantic_error(err);
         return ERROR;
     }
-    printf("SYMBOL SIZE; %d, lexema: %s\n\n", symbol_get_size(sym), $1.lexema);
-    print_symbol(stdout, sym);
     // identificador corresponde con la declaracion de un vector
     if (symbol_get_classs(sym) != VECTOR){
         semantic_error("Intento de indexacion de una variable que no es de tipo vector.\n");
@@ -407,7 +405,13 @@ elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERE
     }
     $$.tipo = symbol_get_type(sym);
     $$.es_direccion = 1;
+    $$.valor_entero = $3.valor_entero;
     escribir_elemento_vector(yyout, $1.lexema, symbol_get_size(sym), $3.es_direccion);
+
+    if(en_explist == 1) {
+        operandoEnPilaAArgumento(yyout, 1);
+    }
+
 };
 
 condicional:    if_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
@@ -603,14 +607,11 @@ exp:    exp TOK_MAS exp {
     if (sym->category == VARIABLE) {
         if(actual_scope(table) == LOCAL) {
             // if inside function don't push a local identifier
-            char buf[MAX_ERROR];
-            sprintf(buf, "%d", $1.valor_entero);
-            printf("SE va a escribir un %d\n\n", $1.valor_entero);
-            escribir_operando(yyout, buf, 0);
+            escribirVariableLocal(yyout, sym->pos_local);
         } else {
-            printf("SE va a escribir un %s\n\n", $1.lexema);
-            print_symbol(stdout, sym);
             escribir_operando(yyout, $1.lexema, 1);
+
+
             if(en_explist == 1) {
                 operandoEnPilaAArgumento(yyout, 1);
             }
@@ -786,14 +787,14 @@ constante_logica:   TOK_TRUE {
     $$.tipo = BOOLEAN;
     $$.es_direccion = 0;
     $$.valor_entero = 1;
-    escribir_operando(yyout, "0", 0);
+    escribir_operando(yyout, "1", 0);
 }
                     | TOK_FALSE {
     fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");
     $$.tipo = BOOLEAN;
     $$.es_direccion = 0;
     $$.valor_entero = 0;
-    escribir_operando(yyout, "1", 0);
+    escribir_operando(yyout, "0", 0);
 };
 
 constante_entera:   TOK_CONSTANTE_ENTERA {
@@ -816,7 +817,6 @@ identificador:  TOK_IDENTIFICADOR {
 
     if(actual_scope(table) == GLOBAL) {
         if (clase_actual == VECTOR) {
-            printf("Tamaño vect actual: %d, lexema: %s\n\n", tamanio_vector_actual, $1.lexema);
             declare_global(table, $1.lexema, $1.valor_entero, VARIABLE, clase_actual, tipo_actual, tamanio_vector_actual, ERROR, pos_var_local, ERROR, ERROR);
         } else {
             tamanio_vector_actual = 1;
