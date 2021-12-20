@@ -1,6 +1,6 @@
 %{
-#include "y.tab.h"
 #include "alfa.h"
+#include "y.tab.h"
 
 int ycol = 1;
 int yline = 1;
@@ -66,8 +66,8 @@ false { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_FALSE; }
 
 {LETTER}({DIGIT}|{LETTER}){100,} { printf("****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", yline, ycol, yytext); err_morf = 1; return TOK_ERROR; }
 
-{DIGIT}+ { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
-{LETTER}({DIGIT}|{LETTER}){0,99} { ycol += yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR; }
+{DIGIT}+ { ycol += yyleng; yylval.atributos.valor_entero=atoi(yytext); fprintf(yyout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
+{LETTER}({DIGIT}|{LETTER}){0,99} { ycol += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(yyout, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR; }
 
 
 
