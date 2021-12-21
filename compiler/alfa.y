@@ -353,6 +353,8 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
         semantic_error("Asignacion incompatible.\n");
         return ERROR;
     }
+    printf("\nsymbol_set_value(%s, %d)\n", symbol_get_id(sym), $3.valor_entero);
+    symbol_set_value(sym, $3.valor_entero);
     if (actual_scope(table) == GLOBAL){
         asignar(yyout, $1.lexema, $3.es_direccion);
     }else{
@@ -373,11 +375,9 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
         semantic_error("Asignacion incompatible.\n");
         return ERROR;
     }
-    char aux[MAX_TAMANIO_VECTOR];
-    sprintf(aux, "%d", $1.valor_entero);
-    escribir_operando(yyout, aux, 0);
-    escribir_elemento_vector(yyout, sym->id, sym->size, $3.es_direccion);
-    asignarDestinoEnPila(yyout, $3.es_direccion);
+    // in the stack we have at the top the value and below the address
+    // of the vector element where we want the value to be assigned  
+    asignarDestinoEnPilaInv(yyout, $3.es_direccion);
 };
 
 elemento_vector:    TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {

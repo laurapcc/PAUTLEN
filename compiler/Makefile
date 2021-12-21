@@ -5,6 +5,9 @@ SYNTACTIC_DIR=syntactic
 ERROR_DIR=errors
 CODE_GENERATION_DIR=code_generation
 
+%.c: %.y
+%.c: %.l
+
 all: alfa
 
 alfa: y.tab.o lex.yy.o symbols_table.o generacion.o alfa.o
@@ -133,6 +136,12 @@ ex9:
 	nasm -g -o $(SYNTACTIC_DIR)/ex9.o -f elf32 $(SYNTACTIC_DIR)/ex9.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex9 $(SYNTACTIC_DIR)/ex9.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex9
+
+ex11:
+	./alfa $(SYNTACTIC_DIR)/ex11.c $(SYNTACTIC_DIR)/ex11.asm
+	nasm -g -o $(SYNTACTIC_DIR)/ex11.o -f elf32 $(SYNTACTIC_DIR)/ex11.asm
+	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex11 $(SYNTACTIC_DIR)/ex11.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(SYNTACTIC_DIR)/ex11
 
 semantic_error1:
 	./alfa $(ERROR_DIR)/semantic_error1.alfa $(ERROR_DIR)/semantic_error1.asm
@@ -264,6 +273,7 @@ clean_output:
 	rm -rf $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6 $(SYNTACTIC_DIR)/ex6.o
 	rm -rf $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o
 	rm -rf $(SYNTACTIC_DIR)/ex9.asm $(SYNTACTIC_DIR)/ex9.asm $(SYNTACTIC_DIR)/ex9 $(SYNTACTIC_DIR)/ex9.o
+	rm -rf $(SYNTACTIC_DIR)/ex11.asm $(SYNTACTIC_DIR)/ex11.asm $(SYNTACTIC_DIR)/ex11 $(SYNTACTIC_DIR)/ex11.o
 	rm -rf $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic $(SYNTACTIC_DIR)/arithmetic.o
 	rm -rf $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic $(SYNTACTIC_DIR)/logic.o
 	rm -rf $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1 $(ERROR_DIR)/semantic_error1.o

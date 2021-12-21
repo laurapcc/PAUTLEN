@@ -1,0 +1,31 @@
+main {
+    int n, m;
+    array int[10] v;
+
+    m = 2;
+    n = 2;
+    v[n] = 22;
+    printf v[n];
+    n = n + 1;
+    v[n] = 22;
+    printf v[n];
+
+
+    m = 0;
+    while ( m <= 4 ){
+        printf m;
+        v[m] = m*10;
+        printf v[m];
+
+        n = 0;
+        while ( n <= 4 ){
+            printf m;
+            v[m] = v[m]*10;
+            printf v[m];
+            n = n + 1;
+        }
+
+        m = m + 1;
+    }
+
+}
