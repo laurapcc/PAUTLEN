@@ -1,4 +1,5 @@
 //****Error semantico en lin X: Declaracion duplicada.
+main
 {
     int x, y ;
 

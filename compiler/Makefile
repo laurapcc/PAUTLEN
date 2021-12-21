@@ -90,61 +90,61 @@ logic:
 
 
 ex1:
-	./alfa $(SYNTACTIC_DIR)/ex1.c $(SYNTACTIC_DIR)/ex1.asm
+	./alfa $(SYNTACTIC_DIR)/ex1.alfa $(SYNTACTIC_DIR)/ex1.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex1.o -f elf32 $(SYNTACTIC_DIR)/ex1.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex1 $(SYNTACTIC_DIR)/ex1.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex1
 
 ex2:
-	./alfa $(SYNTACTIC_DIR)/ex2.c $(SYNTACTIC_DIR)/ex2.asm
+	./alfa $(SYNTACTIC_DIR)/ex2.alfa $(SYNTACTIC_DIR)/ex2.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex2.o -f elf32 $(SYNTACTIC_DIR)/ex2.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex2 $(SYNTACTIC_DIR)/ex2.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex2
 
 ex3:
-	./alfa $(SYNTACTIC_DIR)/ex3.c $(SYNTACTIC_DIR)/ex3.asm
+	./alfa $(SYNTACTIC_DIR)/ex3.alfa $(SYNTACTIC_DIR)/ex3.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex3.o -f elf32 $(SYNTACTIC_DIR)/ex3.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex3 $(SYNTACTIC_DIR)/ex3.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex3
 
 ex4:
-	./alfa $(SYNTACTIC_DIR)/ex4.c $(SYNTACTIC_DIR)/ex4.asm
+	./alfa $(SYNTACTIC_DIR)/ex4.alfa $(SYNTACTIC_DIR)/ex4.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex4.o -f elf32 $(SYNTACTIC_DIR)/ex4.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex4 $(SYNTACTIC_DIR)/ex4.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex4
 
 ex5:
-	./alfa $(SYNTACTIC_DIR)/ex5.c $(SYNTACTIC_DIR)/ex5.asm
+	./alfa $(SYNTACTIC_DIR)/ex5.alfa $(SYNTACTIC_DIR)/ex5.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex5.o -f elf32 $(SYNTACTIC_DIR)/ex5.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex5 $(SYNTACTIC_DIR)/ex5.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex5
 
 ex6:
-	./alfa $(SYNTACTIC_DIR)/ex6.c $(SYNTACTIC_DIR)/ex6.asm
+	./alfa $(SYNTACTIC_DIR)/ex6.alfa $(SYNTACTIC_DIR)/ex6.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex6.o -f elf32 $(SYNTACTIC_DIR)/ex6.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex6 $(SYNTACTIC_DIR)/ex6.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex6
 
 ex7:
-	./alfa $(SYNTACTIC_DIR)/ex7.c $(SYNTACTIC_DIR)/ex7.asm
+	./alfa $(SYNTACTIC_DIR)/ex7.alfa $(SYNTACTIC_DIR)/ex7.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex7.o -f elf32 $(SYNTACTIC_DIR)/ex7.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex7
 
 ex9:
-	./alfa $(SYNTACTIC_DIR)/ex9.c $(SYNTACTIC_DIR)/ex9.asm
+	./alfa $(SYNTACTIC_DIR)/ex9.alfa $(SYNTACTIC_DIR)/ex9.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex9.o -f elf32 $(SYNTACTIC_DIR)/ex9.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex9 $(SYNTACTIC_DIR)/ex9.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex9
 
 ex10:
-	./alfa $(SYNTACTIC_DIR)/ex10.c $(SYNTACTIC_DIR)/ex10.asm
+	./alfa $(SYNTACTIC_DIR)/ex10.alfa $(SYNTACTIC_DIR)/ex10.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex10.o -f elf32 $(SYNTACTIC_DIR)/ex10.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex10 $(SYNTACTIC_DIR)/ex10.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex10
 
 ex11:
-	./alfa $(SYNTACTIC_DIR)/ex11.c $(SYNTACTIC_DIR)/ex11.asm
+	./alfa $(SYNTACTIC_DIR)/ex11.alfa $(SYNTACTIC_DIR)/ex11.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex11.o -f elf32 $(SYNTACTIC_DIR)/ex11.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex11 $(SYNTACTIC_DIR)/ex11.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex11
