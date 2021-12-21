@@ -23,6 +23,11 @@ main {
             v[m] = v[m]*10;
             printf v[m];
             n = n + 1;
+
+            if (n>2)  {
+                printf n;
+                printf 999999999;
+            }
         }
 
         m = m + 1;

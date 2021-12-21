@@ -353,7 +353,6 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
         semantic_error("Asignacion incompatible.\n");
         return ERROR;
     }
-    printf("\nsymbol_set_value(%s, %d)\n", symbol_get_id(sym), $3.valor_entero);
     symbol_set_value(sym, $3.valor_entero);
     if (actual_scope(table) == GLOBAL){
         asignar(yyout, $1.lexema, $3.es_direccion);
