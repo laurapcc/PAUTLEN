@@ -1,0 +1,14 @@
+main
+{
+    int x, y ;
+    boolean a,b; 
+
+    x=1;
+    x=2;
+    a=true;
+    a=false;
+
+    if ((x+3)) {
+        y=0;
+    }      
+}    

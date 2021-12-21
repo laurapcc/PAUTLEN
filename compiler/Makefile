@@ -2,6 +2,7 @@ CC=gcc
 CFLAGS=-Wall
 SYMBOLS_DIR=symbols_table
 SYNTACTIC_DIR=syntactic
+ERROR_DIR=errors
 CODE_GENERATION_DIR=code_generation
 
 all: compiler
@@ -71,6 +72,18 @@ guion:
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/guion $(SYNTACTIC_DIR)/guion.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/guion
 
+arithmetic:
+	./compiler $(SYNTACTIC_DIR)/arithmetic.alfa $(SYNTACTIC_DIR)/arithmetic.asm
+	nasm -g -o $(SYNTACTIC_DIR)/arithmetic.o -f elf32 $(SYNTACTIC_DIR)/arithmetic.asm
+	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/arithmetic $(SYNTACTIC_DIR)/arithmetic.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(SYNTACTIC_DIR)/arithmetic	
+
+logic:
+	./compiler $(SYNTACTIC_DIR)/logic.alfa $(SYNTACTIC_DIR)/logic.asm
+	nasm -g -o $(SYNTACTIC_DIR)/logic.o -f elf32 $(SYNTACTIC_DIR)/logic.asm
+	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/logic $(SYNTACTIC_DIR)/logic.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(SYNTACTIC_DIR)/logic	
+
 
 
 ex1:
@@ -115,8 +128,95 @@ ex7:
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex7
 
+semantic_error1:
+	./compiler $(ERROR_DIR)/semantic_error1.alfa $(ERROR_DIR)/semantic_error1.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error1.o -f elf32 $(ERROR_DIR)/semantic_error1.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error1 $(ERROR_DIR)/semantic_error1.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error1		
 
+semantic_error2:
+	./compiler $(ERROR_DIR)/semantic_error2.alfa $(ERROR_DIR)/semantic_error2.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error2.o -f elf32 $(ERROR_DIR)/semantic_error2.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error2 $(ERROR_DIR)/semantic_error2.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error2		
 
+semantic_error3:
+	./compiler $(ERROR_DIR)/semantic_error3.alfa $(ERROR_DIR)/semantic_error3.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error3.o -f elf32 $(ERROR_DIR)/semantic_error3.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error3 $(ERROR_DIR)/semantic_error3.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error3	
+
+semantic_error4:
+	./compiler $(ERROR_DIR)/semantic_error4.alfa $(ERROR_DIR)/semantic_error4.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error4.o -f elf32 $(ERROR_DIR)/semantic_error4.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error4 $(ERROR_DIR)/semantic_error4.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error4			
+
+semantic_error5:
+	./compiler $(ERROR_DIR)/semantic_error5.alfa $(ERROR_DIR)/semantic_error5.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error5.o -f elf32 $(ERROR_DIR)/semantic_error5.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error5 $(ERROR_DIR)/semantic_error5.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error5
+
+semantic_error6:
+	./compiler $(ERROR_DIR)/semantic_error6.alfa $(ERROR_DIR)/semantic_error6.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error6.o -f elf32 $(ERROR_DIR)/semantic_error6.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error6 $(ERROR_DIR)/semantic_error6.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error6
+
+semantic_error7:
+	./compiler $(ERROR_DIR)/semantic_error7.alfa $(ERROR_DIR)/semantic_error7.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error7.o -f elf32 $(ERROR_DIR)/semantic_error7.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error7 $(ERROR_DIR)/semantic_error7.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error7	
+ 
+semantic_error8:
+	./compiler $(ERROR_DIR)/semantic_error8.alfa $(ERROR_DIR)/semantic_error8.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error8.o -f elf32 $(ERROR_DIR)/semantic_error8.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error8 $(ERROR_DIR)/semantic_error8.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error8
+
+semantic_error9:
+	./compiler $(ERROR_DIR)/semantic_error9.alfa $(ERROR_DIR)/semantic_error9.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error9.o -f elf32 $(ERROR_DIR)/semantic_error9.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error9 $(ERROR_DIR)/semantic_error9.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error9
+
+semantic_error10:
+	./compiler $(ERROR_DIR)/semantic_error10.alfa $(ERROR_DIR)/semantic_error10.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error10.o -f elf32 $(ERROR_DIR)/semantic_error10.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error10 $(ERROR_DIR)/semantic_error10.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error10
+
+semantic_error11:
+	./compiler $(ERROR_DIR)/semantic_error11.alfa $(ERROR_DIR)/semantic_error11.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error11.o -f elf32 $(ERROR_DIR)/semantic_error11.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error11 $(ERROR_DIR)/semantic_error11.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error11	
+
+semantic_error12:
+	./compiler $(ERROR_DIR)/semantic_error12.alfa $(ERROR_DIR)/semantic_error12.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error12.o -f elf32 $(ERROR_DIR)/semantic_error12.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error12 $(ERROR_DIR)/semantic_error12.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error12	
+
+semantic_error13:
+	./compiler $(ERROR_DIR)/semantic_error13.alfa $(ERROR_DIR)/semantic_error13.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error13.o -f elf32 $(ERROR_DIR)/semantic_error13.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error13 $(ERROR_DIR)/semantic_error13.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error13	
+
+semantic_error14:
+	./compiler $(ERROR_DIR)/semantic_error14.alfa $(ERROR_DIR)/semantic_error14.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error14.o -f elf32 $(ERROR_DIR)/semantic_error14.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error14 $(ERROR_DIR)/semantic_error14.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error14			
+
+semantic_error15:
+	./compiler $(ERROR_DIR)/semantic_error15.alfa $(ERROR_DIR)/semantic_error15.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error15.o -f elf32 $(ERROR_DIR)/semantic_error15.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error15 $(ERROR_DIR)/semantic_error15.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error15					
 
 clean: 
 	rm -rf *.o 
@@ -139,5 +239,23 @@ clean_output:
 	rm -rf $(SYNTACTIC_DIR)/ex5.asm $(SYNTACTIC_DIR)/ex5.asm $(SYNTACTIC_DIR)/ex5 $(SYNTACTIC_DIR)/ex5.o
 	rm -rf $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6 $(SYNTACTIC_DIR)/ex6.o
 	rm -rf $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o
+	rm -rf $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic $(SYNTACTIC_DIR)/arithmetic.o
+	rm -rf $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic $(SYNTACTIC_DIR)/logic.o
+	rm -rf $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1 $(ERROR_DIR)/semantic_error1.o
+	rm -rf $(ERROR_DIR)/semantic_error2.asm $(ERROR_DIR)/semantic_error2.asm $(ERROR_DIR)/semantic_error2 $(ERROR_DIR)/semantic_error2.o
+	rm -rf $(ERROR_DIR)/semantic_error3.asm $(ERROR_DIR)/semantic_error3.asm $(ERROR_DIR)/semantic_error3 $(ERROR_DIR)/semantic_error3.o
+	rm -rf $(ERROR_DIR)/semantic_error4.asm $(ERROR_DIR)/semantic_error4.asm $(ERROR_DIR)/semantic_error4 $(ERROR_DIR)/semantic_error4.o
+	rm -rf $(ERROR_DIR)/semantic_error5.asm $(ERROR_DIR)/semantic_error5.asm $(ERROR_DIR)/semantic_error5 $(ERROR_DIR)/semantic_error5.o
+	rm -rf $(ERROR_DIR)/semantic_error6.asm $(ERROR_DIR)/semantic_error6.asm $(ERROR_DIR)/semantic_error6 $(ERROR_DIR)/semantic_error6.o
+	rm -rf $(ERROR_DIR)/semantic_error7.asm $(ERROR_DIR)/semantic_error7.asm $(ERROR_DIR)/semantic_error7 $(ERROR_DIR)/semantic_error7.o
+	rm -rf $(ERROR_DIR)/semantic_error8.asm $(ERROR_DIR)/semantic_error8.asm $(ERROR_DIR)/semantic_error8 $(ERROR_DIR)/semantic_error8.o
+	rm -rf $(ERROR_DIR)/semantic_error9.asm $(ERROR_DIR)/semantic_error9.asm $(ERROR_DIR)/semantic_error9 $(ERROR_DIR)/semantic_error9.o
+	rm -rf $(ERROR_DIR)/semantic_error10.asm $(ERROR_DIR)/semantic_error10.asm $(ERROR_DIR)/semantic_error10 $(ERROR_DIR)/semantic_error10.o
+	rm -rf $(ERROR_DIR)/semantic_error11.asm $(ERROR_DIR)/semantic_error11.asm $(ERROR_DIR)/semantic_error11 $(ERROR_DIR)/semantic_error11.o
+	rm -rf $(ERROR_DIR)/semantic_error12.asm $(ERROR_DIR)/semantic_error12.asm $(ERROR_DIR)/semantic_error12 $(ERROR_DIR)/semantic_error12.o
+	rm -rf $(ERROR_DIR)/semantic_error13.asm $(ERROR_DIR)/semantic_error13.asm $(ERROR_DIR)/semantic_error13 $(ERROR_DIR)/semantic_error13.o
+	rm -rf $(ERROR_DIR)/semantic_error14.asm $(ERROR_DIR)/semantic_error14.asm $(ERROR_DIR)/semantic_error14 $(ERROR_DIR)/semantic_error14.o
+	rm -rf $(ERROR_DIR)/semantic_error15.asm $(ERROR_DIR)/semantic_error15.asm $(ERROR_DIR)/semantic_error15 $(ERROR_DIR)/semantic_error15.o
+	
 
 clean_all: clean clean_output
