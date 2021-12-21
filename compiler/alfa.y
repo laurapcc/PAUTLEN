@@ -634,11 +634,6 @@ exp:    exp TOK_MAS exp {
     $$.tipo = $2.tipo;
     $$.es_direccion = $2.es_direccion;
 }
-        | comparacion {
-    fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");
-    $$.tipo = $1.tipo;
-    $$.es_direccion = $1.es_direccion;
-}
         | elemento_vector {
     fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");
     $$.tipo = $1.tipo;
