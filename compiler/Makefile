@@ -5,12 +5,12 @@ SYNTACTIC_DIR=syntactic
 ERROR_DIR=errors
 CODE_GENERATION_DIR=code_generation
 
-all: compiler
+all: alfa
 
-compiler: y.tab.o lex.yy.o symbols_table.o generacion.o compiler.o
+alfa: y.tab.o lex.yy.o symbols_table.o generacion.o alfa.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-compiler.o: compiler.c
+alfa.o: alfa.c
 	$(CC) $(CFLAGS) -c $^
 
 lex.yy.o: lex.yy.c
@@ -37,49 +37,49 @@ generacion.o: $(CODE_GENERATION_DIR)/generacion.c
 
 
 funciones:
-	./compiler $(SYNTACTIC_DIR)/funciones.alfa $(SYNTACTIC_DIR)/funciones.asm
+	./alfa $(SYNTACTIC_DIR)/funciones.alfa $(SYNTACTIC_DIR)/funciones.asm
 	nasm -g -o $(SYNTACTIC_DIR)/funciones.o -f elf32 $(SYNTACTIC_DIR)/funciones.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/funciones $(SYNTACTIC_DIR)/funciones.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/funciones
 
 condicionales:
-	./compiler $(SYNTACTIC_DIR)/condicionales.alfa $(SYNTACTIC_DIR)/condicionales.asm
+	./alfa $(SYNTACTIC_DIR)/condicionales.alfa $(SYNTACTIC_DIR)/condicionales.asm
 	nasm -g -o $(SYNTACTIC_DIR)/condicionales.o -f elf32 $(SYNTACTIC_DIR)/condicionales.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/condicionales $(SYNTACTIC_DIR)/condicionales.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/condicionales
 
 fibonacci:
-	./compiler $(SYNTACTIC_DIR)/fibonacci.alfa $(SYNTACTIC_DIR)/fibonacci.asm
+	./alfa $(SYNTACTIC_DIR)/fibonacci.alfa $(SYNTACTIC_DIR)/fibonacci.asm
 	nasm -g -o $(SYNTACTIC_DIR)/fibonacci.o -f elf32 $(SYNTACTIC_DIR)/fibonacci.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/fibonacci $(SYNTACTIC_DIR)/fibonacci.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/fibonacci
 
 factorial:
-	./compiler $(SYNTACTIC_DIR)/factorial.alfa $(SYNTACTIC_DIR)/factorial.asm
+	./alfa $(SYNTACTIC_DIR)/factorial.alfa $(SYNTACTIC_DIR)/factorial.asm
 	nasm -g -o $(SYNTACTIC_DIR)/factorial.o -f elf32 $(SYNTACTIC_DIR)/factorial.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/factorial $(SYNTACTIC_DIR)/factorial.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/factorial
 
 funciones_vectores:
-	./compiler $(SYNTACTIC_DIR)/funciones_vectores.alfa $(SYNTACTIC_DIR)/funciones_vectores.asm
+	./alfa $(SYNTACTIC_DIR)/funciones_vectores.alfa $(SYNTACTIC_DIR)/funciones_vectores.asm
 	nasm -g -o $(SYNTACTIC_DIR)/funciones_vectores.o -f elf32 $(SYNTACTIC_DIR)/funciones_vectores.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/funciones_vectores $(SYNTACTIC_DIR)/funciones_vectores.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/funciones_vectores
 
 guion:
-	./compiler $(SYNTACTIC_DIR)/guion.c $(SYNTACTIC_DIR)/guion.asm
+	./alfa $(SYNTACTIC_DIR)/guion.c $(SYNTACTIC_DIR)/guion.asm
 	nasm -g -o $(SYNTACTIC_DIR)/guion.o -f elf32 $(SYNTACTIC_DIR)/guion.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/guion $(SYNTACTIC_DIR)/guion.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/guion
 
 arithmetic:
-	./compiler $(SYNTACTIC_DIR)/arithmetic.alfa $(SYNTACTIC_DIR)/arithmetic.asm
+	./alfa $(SYNTACTIC_DIR)/arithmetic.alfa $(SYNTACTIC_DIR)/arithmetic.asm
 	nasm -g -o $(SYNTACTIC_DIR)/arithmetic.o -f elf32 $(SYNTACTIC_DIR)/arithmetic.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/arithmetic $(SYNTACTIC_DIR)/arithmetic.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/arithmetic	
 
 logic:
-	./compiler $(SYNTACTIC_DIR)/logic.alfa $(SYNTACTIC_DIR)/logic.asm
+	./alfa $(SYNTACTIC_DIR)/logic.alfa $(SYNTACTIC_DIR)/logic.asm
 	nasm -g -o $(SYNTACTIC_DIR)/logic.o -f elf32 $(SYNTACTIC_DIR)/logic.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/logic $(SYNTACTIC_DIR)/logic.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/logic	
@@ -87,158 +87,158 @@ logic:
 
 
 ex1:
-	./compiler $(SYNTACTIC_DIR)/ex1.c $(SYNTACTIC_DIR)/ex1.asm
+	./alfa $(SYNTACTIC_DIR)/ex1.c $(SYNTACTIC_DIR)/ex1.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex1.o -f elf32 $(SYNTACTIC_DIR)/ex1.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex1 $(SYNTACTIC_DIR)/ex1.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex1
 
 ex2:
-	./compiler $(SYNTACTIC_DIR)/ex2.c $(SYNTACTIC_DIR)/ex2.asm
+	./alfa $(SYNTACTIC_DIR)/ex2.c $(SYNTACTIC_DIR)/ex2.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex2.o -f elf32 $(SYNTACTIC_DIR)/ex2.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex2 $(SYNTACTIC_DIR)/ex2.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex2
 
 ex3:
-	./compiler $(SYNTACTIC_DIR)/ex3.c $(SYNTACTIC_DIR)/ex3.asm
+	./alfa $(SYNTACTIC_DIR)/ex3.c $(SYNTACTIC_DIR)/ex3.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex3.o -f elf32 $(SYNTACTIC_DIR)/ex3.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex3 $(SYNTACTIC_DIR)/ex3.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex3
 
 ex4:
-	./compiler $(SYNTACTIC_DIR)/ex4.c $(SYNTACTIC_DIR)/ex4.asm
+	./alfa $(SYNTACTIC_DIR)/ex4.c $(SYNTACTIC_DIR)/ex4.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex4.o -f elf32 $(SYNTACTIC_DIR)/ex4.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex4 $(SYNTACTIC_DIR)/ex4.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex4
 
 ex5:
-	./compiler $(SYNTACTIC_DIR)/ex5.c $(SYNTACTIC_DIR)/ex5.asm
+	./alfa $(SYNTACTIC_DIR)/ex5.c $(SYNTACTIC_DIR)/ex5.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex5.o -f elf32 $(SYNTACTIC_DIR)/ex5.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex5 $(SYNTACTIC_DIR)/ex5.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex5
 
 ex6:
-	./compiler $(SYNTACTIC_DIR)/ex6.c $(SYNTACTIC_DIR)/ex6.asm
+	./alfa $(SYNTACTIC_DIR)/ex6.c $(SYNTACTIC_DIR)/ex6.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex6.o -f elf32 $(SYNTACTIC_DIR)/ex6.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex6 $(SYNTACTIC_DIR)/ex6.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex6
 
 ex7:
-	./compiler $(SYNTACTIC_DIR)/ex7.c $(SYNTACTIC_DIR)/ex7.asm
+	./alfa $(SYNTACTIC_DIR)/ex7.c $(SYNTACTIC_DIR)/ex7.asm
 	nasm -g -o $(SYNTACTIC_DIR)/ex7.o -f elf32 $(SYNTACTIC_DIR)/ex7.asm
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex7
 
 semantic_error1:
-	./compiler $(ERROR_DIR)/semantic_error1.alfa $(ERROR_DIR)/semantic_error1.asm
+	./alfa $(ERROR_DIR)/semantic_error1.alfa $(ERROR_DIR)/semantic_error1.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error1.o -f elf32 $(ERROR_DIR)/semantic_error1.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error1 $(ERROR_DIR)/semantic_error1.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error1		
 
 semantic_error2:
-	./compiler $(ERROR_DIR)/semantic_error2.alfa $(ERROR_DIR)/semantic_error2.asm
+	./alfa $(ERROR_DIR)/semantic_error2.alfa $(ERROR_DIR)/semantic_error2.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error2.o -f elf32 $(ERROR_DIR)/semantic_error2.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error2 $(ERROR_DIR)/semantic_error2.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error2		
 
 semantic_error3:
-	./compiler $(ERROR_DIR)/semantic_error3.alfa $(ERROR_DIR)/semantic_error3.asm
+	./alfa $(ERROR_DIR)/semantic_error3.alfa $(ERROR_DIR)/semantic_error3.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error3.o -f elf32 $(ERROR_DIR)/semantic_error3.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error3 $(ERROR_DIR)/semantic_error3.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error3	
 
 semantic_error4:
-	./compiler $(ERROR_DIR)/semantic_error4.alfa $(ERROR_DIR)/semantic_error4.asm
+	./alfa $(ERROR_DIR)/semantic_error4.alfa $(ERROR_DIR)/semantic_error4.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error4.o -f elf32 $(ERROR_DIR)/semantic_error4.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error4 $(ERROR_DIR)/semantic_error4.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error4			
 
 semantic_error5:
-	./compiler $(ERROR_DIR)/semantic_error5.alfa $(ERROR_DIR)/semantic_error5.asm
+	./alfa $(ERROR_DIR)/semantic_error5.alfa $(ERROR_DIR)/semantic_error5.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error5.o -f elf32 $(ERROR_DIR)/semantic_error5.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error5 $(ERROR_DIR)/semantic_error5.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error5
 
 semantic_error6:
-	./compiler $(ERROR_DIR)/semantic_error6.alfa $(ERROR_DIR)/semantic_error6.asm
+	./alfa $(ERROR_DIR)/semantic_error6.alfa $(ERROR_DIR)/semantic_error6.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error6.o -f elf32 $(ERROR_DIR)/semantic_error6.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error6 $(ERROR_DIR)/semantic_error6.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error6
 
 semantic_error7:
-	./compiler $(ERROR_DIR)/semantic_error7.alfa $(ERROR_DIR)/semantic_error7.asm
+	./alfa $(ERROR_DIR)/semantic_error7.alfa $(ERROR_DIR)/semantic_error7.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error7.o -f elf32 $(ERROR_DIR)/semantic_error7.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error7 $(ERROR_DIR)/semantic_error7.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error7	
  
 semantic_error8:
-	./compiler $(ERROR_DIR)/semantic_error8.alfa $(ERROR_DIR)/semantic_error8.asm
+	./alfa $(ERROR_DIR)/semantic_error8.alfa $(ERROR_DIR)/semantic_error8.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error8.o -f elf32 $(ERROR_DIR)/semantic_error8.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error8 $(ERROR_DIR)/semantic_error8.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error8
 
 semantic_error9:
-	./compiler $(ERROR_DIR)/semantic_error9.alfa $(ERROR_DIR)/semantic_error9.asm
+	./alfa $(ERROR_DIR)/semantic_error9.alfa $(ERROR_DIR)/semantic_error9.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error9.o -f elf32 $(ERROR_DIR)/semantic_error9.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error9 $(ERROR_DIR)/semantic_error9.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error9
 
 semantic_error10:
-	./compiler $(ERROR_DIR)/semantic_error10.alfa $(ERROR_DIR)/semantic_error10.asm
+	./alfa $(ERROR_DIR)/semantic_error10.alfa $(ERROR_DIR)/semantic_error10.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error10.o -f elf32 $(ERROR_DIR)/semantic_error10.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error10 $(ERROR_DIR)/semantic_error10.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error10
 
 semantic_error11:
-	./compiler $(ERROR_DIR)/semantic_error11.alfa $(ERROR_DIR)/semantic_error11.asm
+	./alfa $(ERROR_DIR)/semantic_error11.alfa $(ERROR_DIR)/semantic_error11.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error11.o -f elf32 $(ERROR_DIR)/semantic_error11.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error11 $(ERROR_DIR)/semantic_error11.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error11	
 
 semantic_error12:
-	./compiler $(ERROR_DIR)/semantic_error12.alfa $(ERROR_DIR)/semantic_error12.asm
+	./alfa $(ERROR_DIR)/semantic_error12.alfa $(ERROR_DIR)/semantic_error12.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error12.o -f elf32 $(ERROR_DIR)/semantic_error12.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error12 $(ERROR_DIR)/semantic_error12.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error12	
 
 semantic_error13:
-	./compiler $(ERROR_DIR)/semantic_error13.alfa $(ERROR_DIR)/semantic_error13.asm
+	./alfa $(ERROR_DIR)/semantic_error13.alfa $(ERROR_DIR)/semantic_error13.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error13.o -f elf32 $(ERROR_DIR)/semantic_error13.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error13 $(ERROR_DIR)/semantic_error13.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error13	
 
 semantic_error14:
-	./compiler $(ERROR_DIR)/semantic_error14.alfa $(ERROR_DIR)/semantic_error14.asm
+	./alfa $(ERROR_DIR)/semantic_error14.alfa $(ERROR_DIR)/semantic_error14.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error14.o -f elf32 $(ERROR_DIR)/semantic_error14.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error14 $(ERROR_DIR)/semantic_error14.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error14			
 
 semantic_error15:
-	./compiler $(ERROR_DIR)/semantic_error15.alfa $(ERROR_DIR)/semantic_error15.asm
+	./alfa $(ERROR_DIR)/semantic_error15.alfa $(ERROR_DIR)/semantic_error15.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error15.o -f elf32 $(ERROR_DIR)/semantic_error15.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error15 $(ERROR_DIR)/semantic_error15.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error15		
 
 semantic_error16:
-	./compiler $(ERROR_DIR)/semantic_error16.alfa $(ERROR_DIR)/semantic_error16.asm
+	./alfa $(ERROR_DIR)/semantic_error16.alfa $(ERROR_DIR)/semantic_error16.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error16.o -f elf32 $(ERROR_DIR)/semantic_error16.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error16 $(ERROR_DIR)/semantic_error16.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/semantic_error16		
 
 runtime_error_div_by_0:
-	./compiler $(ERROR_DIR)/runtime_error_div_by_0.alfa $(ERROR_DIR)/runtime_error_div_by_0.asm
+	./alfa $(ERROR_DIR)/runtime_error_div_by_0.alfa $(ERROR_DIR)/runtime_error_div_by_0.asm
 	nasm -g -o $(ERROR_DIR)/runtime_error_div_by_0.o -f elf32 $(ERROR_DIR)/runtime_error_div_by_0.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/runtime_error_div_by_0 $(ERROR_DIR)/runtime_error_div_by_0.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/runtime_error_div_by_0	
 
 runtime_error_out_of_index_vector:
-	./compiler $(ERROR_DIR)/runtime_error_out_of_index_vector.alfa $(ERROR_DIR)/runtime_error_out_of_index_vector.asm
+	./alfa $(ERROR_DIR)/runtime_error_out_of_index_vector.alfa $(ERROR_DIR)/runtime_error_out_of_index_vector.asm
 	nasm -g -o $(ERROR_DIR)/runtime_error_out_of_index_vector.o -f elf32 $(ERROR_DIR)/runtime_error_out_of_index_vector.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/runtime_error_out_of_index_vector $(ERROR_DIR)/runtime_error_out_of_index_vector.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(ERROR_DIR)/runtime_error_out_of_index_vector					
 
 clean: 
 	rm -rf *.o 
-	rm -rf compiler *.gch 
+	rm -rf alfa *.gch 
 	rm -rf output_sin_1.txt output_sin_2.txt output_sin_3.txt output_sin_4.txt output_sin_5.txt
 	rm -rf y.output y.tab.c y.tab.h lex.yy.c
 
