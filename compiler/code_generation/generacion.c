@@ -7,6 +7,7 @@ argumento.
 */
 
 void escribir_cabecera_bss(FILE* fpasm) {
+    fprintf(fpasm, "; Generacion: escribir_cabecera_bss\n");
     if(fpasm == NULL) return;
 
     fprintf(fpasm, "segment .bss\n");
@@ -19,6 +20,7 @@ puntero de pila extendido (esp). Se te sugiere el nombre __esp para esta variabl
 */
 
 void escribir_subseccion_data(FILE* fpasm){
+    fprintf(fpasm, "; Generacion: escribir_subseccion_data\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "segment .data\n");
@@ -33,6 +35,7 @@ En este punto, al menos, debes ser capaz de detectar la división por 0.
 
 //NO SE PORQ LA VARIABLE TIPO
 void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano){
+    fprintf(fpasm, "; Generacion: declarar_variable\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "_%s resd %d\n", nombre, tamano);
@@ -49,6 +52,7 @@ primera práctica siempre recibirá el valor 1.
 */
 
 void escribir_segmento_codigo(FILE* fpasm) {
+    fprintf(fpasm, "; Generacion: escribir_segmento_codigo\n");
     if(fpasm == NULL) return;
 
     fprintf(fpasm, "segment .txt\n");
@@ -63,6 +67,7 @@ alfalib.o
 */
 
 void escribir_inicio_main(FILE* fpasm){
+    fprintf(fpasm, "; Generacion: escribir_inicio_main\n");
     if(fpasm == NULL) return;
     fprintf(fpasm, "main:\n");
     fprintf(fpasm, "mov dword [__esp], esp\n");
@@ -73,6 +78,7 @@ guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 
 void escribir_fin(FILE* fpasm) {
+    fprintf(fpasm, "; Generacion: escribir_fin\n");
     if(fpasm == NULL) return;
     
     // End program.
@@ -109,6 +115,7 @@ zona de finalización del programa).
 */
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
+    fprintf(fpasm, "; Generacion: escribir_operando; nombre: %s, es_variable: %d\n", nombre, es_variable);
     if (fpasm == NULL || nombre == NULL) return;
 
     if (es_variable == 0){
@@ -130,6 +137,7 @@ segundo se representará tal y como esté en el argumento (34).
 */
 
 void asignar(FILE* fpasm, char* nombre, int es_variable) {
+    fprintf(fpasm, "; Generacion: asignar\n");
     if (fpasm == NULL || nombre == NULL) return;
 
     fprintf(fpasm, "pop dword eax\n");
@@ -166,6 +174,7 @@ controlado (restaurando el puntero de pila en ese caso y comprobando en el retor
 que no se produce “Segmentation Fault”)
 */
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    fprintf(fpasm, "; Generacion: sumar\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -190,6 +199,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
+    fprintf(fpasm, "; Generacion: restar\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -214,6 +224,7 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 }
 
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    fprintf(fpasm, "; Generacion: multiplicar\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -238,6 +249,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    fprintf(fpasm, "; Generacion: dividir\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -267,6 +279,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    fprintf(fpasm, "; Generacion: o\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -290,6 +303,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
     fprintf(fpasm, "push dword eax\n");
 }
 void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
+    fprintf(fpasm, "; Generacion: y\n");
     if (fpasm == NULL) return;
 
     /* store variable 2 in ebx */
@@ -313,6 +327,7 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
     fprintf(fpasm, "push dword eax\n");
 }
 void cambiar_signo(FILE* fpasm, int es_variable) {
+    fprintf(fpasm, "; Generacion: cambiar_signo\n");
     if (fpasm == NULL) return;
 
     /* store variable in eax */
@@ -333,6 +348,7 @@ Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya
 que sólo usa un operando.
 */
 void no(FILE* fpasm, int es_variable, int cuantos_no) {
+    fprintf(fpasm, "; Generacion: no\n");
     if (fpasm == NULL) return;
 
     if (es_variable == 0){
@@ -365,6 +381,7 @@ resto de operaciones. Se deben usar etiquetas para poder gestionar los saltos
 necesarios para implementar las comparaciones.
 */
 void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: igual\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -397,6 +414,7 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 }
 
 void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: distinto\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -429,6 +447,7 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 }
 
 void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: menor_igual\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -461,6 +480,7 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 }
 
 void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: mayor_igual\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -493,6 +513,7 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 }
 
 void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: menor\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -525,6 +546,7 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 }
 
 void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+    fprintf(fpasm, "; Generacion: mayor\n");
     if (fpasm == NULL) return;
 
     if (es_variable2 == 1){
@@ -566,6 +588,7 @@ Se deben insertar en la pila los argumentos necesarios, realizar la llamada
 */
 
 void leer(FILE* fpasm, char* nombre, int tipo) {
+    fprintf(fpasm, "; Generacion: leer\n");
     if (fpasm == NULL) return;
 
     /* Cargamos en la pila la variable */
@@ -584,6 +607,7 @@ void leer(FILE* fpasm, char* nombre, int tipo) {
 }
 
 void escribir(FILE* fpasm, int es_variable, int tipo) {
+    fprintf(fpasm, "; Generacion: escribir\n");
     if (fpasm == NULL) return;
 
     if (es_variable == 1){
@@ -605,6 +629,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 }
 
 void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
+    fprintf(fpasm, "; Generacion: ifthenelse_inicio\n");
     if (fpasm == NULL) return;
 
     if (exp_es_variable == 1){
@@ -620,6 +645,7 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
 }
 
 void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
+    fprintf(fpasm, "; Generacion: ifthen_inicio\n");
     if (fpasm == NULL) return;
 
     if (exp_es_variable == 1){
@@ -635,12 +661,14 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
 }
 
 void ifthen_fin(FILE * fpasm, int etiqueta) {
+    fprintf(fpasm, "; Generacion: ifthen_fin\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "then_fin_%d:\n", etiqueta);
 }
 
 void ifthenelse_fin_then( FILE * fpasm, int etiqueta) {
+    fprintf(fpasm, "; Generacion: ifthenelse_fin_then\n");
     if (fpasm == NULL) return;
     
     fprintf(fpasm, "jmp near then_else_fin_%d\n", etiqueta);
@@ -648,18 +676,21 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta) {
 }
 
 void ifthenelse_fin( FILE * fpasm, int etiqueta) {
+    fprintf(fpasm, "; Generacion: ifthenelse_fin\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "then_else_fin_%d:\n", etiqueta);
 }
 
 void while_inicio(FILE * fpasm, int etiqueta) {
+    fprintf(fpasm, "; Generacion: while_inicio\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "while_%d:\n", etiqueta);
 }   
 
 void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta) {
+    fprintf(fpasm, "; Generacion: while_exp_pila\n");
     if (fpasm == NULL) return;
 
     if (exp_es_variable == 1){
@@ -675,6 +706,7 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta) {
 }
 
 void while_fin( FILE * fpasm, int etiqueta) {
+    fprintf(fpasm, "; Generacion: while_fin\n");
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "jmp while_%d\n", etiqueta);
@@ -683,6 +715,7 @@ void while_fin( FILE * fpasm, int etiqueta) {
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
 int tam_max, int exp_es_direccion) {
+    fprintf(fpasm, "; Generacion: escribir_elemento_vector; nombre_vector: %s, tam_max: %d, exp_es_direccion: %d\n", nombre_vector, tam_max, exp_es_direccion);
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "pop dword eax\n");
@@ -713,6 +746,7 @@ tarea.
 
 
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
+    fprintf(fd_asm, "; Generacion: declararFuncion\n");
     if (fd_asm == NULL || nombre_funcion == NULL) return;
 
     fprintf(fd_asm, "%s:\n", nombre_funcion);
@@ -729,6 +763,7 @@ Su número de variables locales
 */
 
 void retornarFuncion(FILE * fd_asm, int es_variable) {
+    fprintf(fd_asm, "; Generacion: retornarFuncion\n");
     if (fd_asm == NULL) return;
 
     fprintf(fd_asm, "pop eax\n");
@@ -748,6 +783,7 @@ Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
 */
 
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
+    fprintf(fpasm, "; Generacion: escribirParametro\n");
     if(fpasm == NULL) return;
 
     int d_ebp;
@@ -764,6 +800,7 @@ de num_total_parametros
 */
 
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local) {
+    fprintf(fpasm, "; Generacion: escribirVariableLocal\n");
     if(fpasm == NULL) return;
 
     int d_ebp;
@@ -778,6 +815,7 @@ la posición posicion_variable_local (recuerda que ordenadas con origen 1)
 */
 
 void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
+    fprintf(fpasm, "; Generacion: asignarDestinoEnPila; es_variable: %d\n", es_variable);
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "pop dword ebx\n");
@@ -804,6 +842,7 @@ Es 0 en caso contrario (constante u otro tipo de expresión)
 */
 
 void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable){
+    fprintf(fd_asm, "; Generacion: operandoEnPilaAArgumento; es_variable: %d\n", es_variable);
     if (fd_asm == NULL) return;
 
     if (es_variable == 1){
@@ -821,6 +860,7 @@ o no (es_variable) se deja en la pila el valor correspondiente
 */
 
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
+    fprintf(fd_asm, "; Generacion: llamarFuncion\n");
     if (fd_asm == NULL || nombre_funcion == NULL) return;
 
     fprintf(fd_asm, "call %s\n", nombre_funcion);
@@ -836,6 +876,7 @@ Para limpiar la pila puede utilizar la función de nombre limpiarPila
 */
 
 void limpiarPila(FILE * fd_asm, int num_argumentos) {
+    fprintf(fd_asm, "; Generacion: limpiarPila\n");
     if (fd_asm == NULL) return;
 
     fprintf(fd_asm, "add esp, %d\n", num_argumentos*4);

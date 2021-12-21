@@ -128,6 +128,12 @@ ex7:
 	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o $(SYNTACTIC_DIR)/alfalib.o
 	./$(SYNTACTIC_DIR)/ex7
 
+ex9:
+	./alfa $(SYNTACTIC_DIR)/ex9.c $(SYNTACTIC_DIR)/ex9.asm
+	nasm -g -o $(SYNTACTIC_DIR)/ex9.o -f elf32 $(SYNTACTIC_DIR)/ex9.asm
+	gcc -Wall -g -m32 -o $(SYNTACTIC_DIR)/ex9 $(SYNTACTIC_DIR)/ex9.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(SYNTACTIC_DIR)/ex9
+
 semantic_error1:
 	./alfa $(ERROR_DIR)/semantic_error1.alfa $(ERROR_DIR)/semantic_error1.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error1.o -f elf32 $(ERROR_DIR)/semantic_error1.asm
@@ -257,6 +263,7 @@ clean_output:
 	rm -rf $(SYNTACTIC_DIR)/ex5.asm $(SYNTACTIC_DIR)/ex5.asm $(SYNTACTIC_DIR)/ex5 $(SYNTACTIC_DIR)/ex5.o
 	rm -rf $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6.asm $(SYNTACTIC_DIR)/ex6 $(SYNTACTIC_DIR)/ex6.o
 	rm -rf $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7.asm $(SYNTACTIC_DIR)/ex7 $(SYNTACTIC_DIR)/ex7.o
+	rm -rf $(SYNTACTIC_DIR)/ex9.asm $(SYNTACTIC_DIR)/ex9.asm $(SYNTACTIC_DIR)/ex9 $(SYNTACTIC_DIR)/ex9.o
 	rm -rf $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic.asm $(SYNTACTIC_DIR)/arithmetic $(SYNTACTIC_DIR)/arithmetic.o
 	rm -rf $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic.asm $(SYNTACTIC_DIR)/logic $(SYNTACTIC_DIR)/logic.o
 	rm -rf $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1.asm $(ERROR_DIR)/semantic_error1 $(ERROR_DIR)/semantic_error1.o
