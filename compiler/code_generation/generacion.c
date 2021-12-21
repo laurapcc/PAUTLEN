@@ -633,7 +633,7 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
     if (fpasm == NULL) return;
 
     if (exp_es_variable == 1){
-        fprintf(fpasm, "pop dowrd eax\n");
+        fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov ebx, [eax]\n");
     }
     else if (exp_es_variable == 0){
@@ -649,7 +649,7 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
     if (fpasm == NULL) return;
 
     if (exp_es_variable == 1){
-        fprintf(fpasm, "pop dowrd eax\n");
+        fprintf(fpasm, "pop dword eax\n");
         fprintf(fpasm, "mov ebx, [eax]\n");
     }
     else if (exp_es_variable == 0){

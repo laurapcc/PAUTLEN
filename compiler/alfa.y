@@ -463,11 +463,11 @@ lectura:    TOK_SCANF TOK_IDENTIFICADOR {
         return ERROR;
     }
     if (symbol_get_category(sym) == FUNCION){
-        semantic_error("-- No se que error poner --");
+        semantic_error("No se permite leer funciones");
         return ERROR;
     }
     if (symbol_get_classs(sym) == VECTOR){
-        semantic_error("-- No se que error poner --");
+        semantic_error("No se permite leer vectores");
         return ERROR;
     }
     leer(yyout, $2.lexema, symbol_get_type(sym));
@@ -486,7 +486,7 @@ retorno_funcion:    TOK_RETURN exp {
         return ERROR;
     }
     if ($2.tipo != funcion_tipo){
-        semantic_error("-- no se que error --");
+        semantic_error("Tipo de retorno incompatible\n");
         return ERROR;
     }
 
@@ -587,18 +587,17 @@ exp:    exp TOK_MAS exp {
     }
 
     if (symbol_get_category(sym) == FUNCION){
-        semantic_error("-- No se que error poner --");
+        semantic_error("Identificador incompatible\n");
         return ERROR;
     }
     if (symbol_get_classs(sym) == VECTOR){
-        semantic_error("-- No se que error poner --");
+        semantic_error("Identificador incompatible\n");
         return ERROR;
     }
     $$.tipo = symbol_get_type(sym);
     $$.es_direccion = 1;
     $$.valor_entero = symbol_get_value(sym);
 
-    //TODO: llamar a funcion de generacion.c pero no se cual
     if (sym->category == VARIABLE) {
         if(actual_scope(table) == LOCAL) {
             // if inside function don't push a local identifier
@@ -614,7 +613,7 @@ exp:    exp TOK_MAS exp {
     } else if (sym->category == PARAMETRO) {
         escribirParametro(yyout, sym->pos_param, num_total_parametros);
     } else {
-        semantic_error("-- No se que error poner --");
+        semantic_error("Identificador incompatible\n");
         return ERROR;
     }
 }
@@ -660,7 +659,6 @@ exp:    exp TOK_MAS exp {
 };
 
 idf_llamada_funcion: TOK_IDENTIFICADOR {
-    //! Donde llamamos a funcion (codigo de genrecion)?????
     symbol *sym;
     if ((sym = search_local_global(table, $1.lexema)) == NULL){
         char err[MAX_ERROR];
@@ -669,7 +667,7 @@ idf_llamada_funcion: TOK_IDENTIFICADOR {
         return ERROR;
     }
     if (symbol_get_category(sym) != FUNCION) {
-        semantic_error("-- No se que error poner--\n");
+        semantic_error("Solo esta permitido llamar a funciones\n");
         return ERROR;
     }
     if (en_explist == 1){
