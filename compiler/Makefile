@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=
 SYMBOLS_DIR=symbols_table
 SYNTACTIC_DIR=syntactic
 ERROR_DIR=errors
@@ -26,10 +26,10 @@ lex.yy.c: alfa.l y.tab.h
 	flex $<
 
 y.tab.c: alfa.y
-	bison -d -y $^
+	bison -d -y -v --report=all $^
 
 y.tab.h: alfa.y
-	bison -d -y -v $^
+	bison -d -y -v --report=all $^
 
 symbols_table.o: $(SYMBOLS_DIR)/symbols_table.c
 	$(CC) $(CFLAGS) -c $^
