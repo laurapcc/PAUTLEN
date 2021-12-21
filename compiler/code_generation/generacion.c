@@ -22,8 +22,8 @@ void escribir_subseccion_data(FILE* fpasm){
     if (fpasm == NULL) return;
 
     fprintf(fpasm, "segment .data\n");
-    fprintf(fpasm, "error_div_by_zero db 'Error, division by zero.', 0\n");
-    fprintf(fpasm, "error_out_of_range db 'Indice de vector fuera de rango', 0\n");
+    fprintf(fpasm, "error_div_by_zero db '****Error de ejecucion: Division por cero.', 0\n");
+    fprintf(fpasm, "error_out_of_range db '****Error de ejecucion: Indice fuera de rango.', 0\n");
 }
 /*
 Declaración (con directiva db) de las variables que contienen el texto de los

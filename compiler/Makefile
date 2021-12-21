@@ -216,7 +216,25 @@ semantic_error15:
 	./compiler $(ERROR_DIR)/semantic_error15.alfa $(ERROR_DIR)/semantic_error15.asm
 	nasm -g -o $(ERROR_DIR)/semantic_error15.o -f elf32 $(ERROR_DIR)/semantic_error15.asm
 	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error15 $(ERROR_DIR)/semantic_error15.o $(SYNTACTIC_DIR)/alfalib.o
-	./$(ERROR_DIR)/semantic_error15					
+	./$(ERROR_DIR)/semantic_error15		
+
+semantic_error16:
+	./compiler $(ERROR_DIR)/semantic_error16.alfa $(ERROR_DIR)/semantic_error16.asm
+	nasm -g -o $(ERROR_DIR)/semantic_error16.o -f elf32 $(ERROR_DIR)/semantic_error16.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/semantic_error16 $(ERROR_DIR)/semantic_error16.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/semantic_error16		
+
+runtime_error_div_by_0:
+	./compiler $(ERROR_DIR)/runtime_error_div_by_0.alfa $(ERROR_DIR)/runtime_error_div_by_0.asm
+	nasm -g -o $(ERROR_DIR)/runtime_error_div_by_0.o -f elf32 $(ERROR_DIR)/runtime_error_div_by_0.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/runtime_error_div_by_0 $(ERROR_DIR)/runtime_error_div_by_0.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/runtime_error_div_by_0	
+
+runtime_error_out_of_index_vector:
+	./compiler $(ERROR_DIR)/runtime_error_out_of_index_vector.alfa $(ERROR_DIR)/runtime_error_out_of_index_vector.asm
+	nasm -g -o $(ERROR_DIR)/runtime_error_out_of_index_vector.o -f elf32 $(ERROR_DIR)/runtime_error_out_of_index_vector.asm
+	gcc -Wall -g -m32 -o $(ERROR_DIR)/runtime_error_out_of_index_vector $(ERROR_DIR)/runtime_error_out_of_index_vector.o $(SYNTACTIC_DIR)/alfalib.o
+	./$(ERROR_DIR)/runtime_error_out_of_index_vector					
 
 clean: 
 	rm -rf *.o 
@@ -256,6 +274,9 @@ clean_output:
 	rm -rf $(ERROR_DIR)/semantic_error13.asm $(ERROR_DIR)/semantic_error13.asm $(ERROR_DIR)/semantic_error13 $(ERROR_DIR)/semantic_error13.o
 	rm -rf $(ERROR_DIR)/semantic_error14.asm $(ERROR_DIR)/semantic_error14.asm $(ERROR_DIR)/semantic_error14 $(ERROR_DIR)/semantic_error14.o
 	rm -rf $(ERROR_DIR)/semantic_error15.asm $(ERROR_DIR)/semantic_error15.asm $(ERROR_DIR)/semantic_error15 $(ERROR_DIR)/semantic_error15.o
+	rm -rf $(ERROR_DIR)/semantic_error16.asm $(ERROR_DIR)/semantic_error16.asm $(ERROR_DIR)/semantic_error16 $(ERROR_DIR)/semantic_error16.o
+	rm -rf $(ERROR_DIR)/runtime_error_div_by_0.asm $(ERROR_DIR)/runtime_error_div_by_0.asm $(ERROR_DIR)/runtime_error_div_by_0 $(ERROR_DIR)/runtime_error_div_by_0.o
+	rm -rf $(ERROR_DIR)/runtime_error_out_of_index_vector.asm $(ERROR_DIR)/runtime_error_out_of_index_vector.asm $(ERROR_DIR)/runtime_error_out_of_index_vector $(ERROR_DIR)/runtime_error_out_of_index_vector.o
 	
 
 clean_all: clean clean_output

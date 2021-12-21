@@ -1,20 +1,19 @@
+// ****Error semantico en lin X: Sentencia de retorno fuera del cuerpo de una función.
 main
 {
     int x, y, resultado;
     function int suma (int n1; int n2){
- 
-        return n1 + n2;
+        int w;
+        w = n1 + n2;
+        return w;
     }    
-
-    function int resta (int n1; int n2){
- 
-        return n1 - n2;
-    }    
+    
+    return x;
 
     scanf x;
     scanf y;
 
-    resultado = suma(resta(8,4),y);
+    resultado = suma(x,y);
     printf resultado;
 	
 }

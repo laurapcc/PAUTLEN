@@ -1,3 +1,4 @@
+//****Error semantico en lin X: Operacion aritmetica con operandos boolean.
 main
 {
     int x, y ;

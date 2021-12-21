@@ -1,3 +1,4 @@
+//****Error semantico en lin X: Acceso a variable no declarada (<nombre_variable>).
 main
 {
     int x, y ;

@@ -1,3 +1,4 @@
+// ****Error semantico en lin X: El tamanyo del vector <nombre_vector> excede los limites permitidos (1,64).
 main
 {
     array int[200] v1;

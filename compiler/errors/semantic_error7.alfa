@@ -1,3 +1,4 @@
+//****Error semantico en lin X: Bucle con condicion de tipo int.
 main
 {
     int x, y ;

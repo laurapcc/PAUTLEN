@@ -1,4 +1,4 @@
-main
+//****Error semantico en lin X: Declaracion duplicada.
 {
     int x, y ;
 
