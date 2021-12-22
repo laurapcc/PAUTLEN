@@ -11,15 +11,15 @@ main
         n = n + 1;
 
         m = 0;
-        while ( m <= 4 ){
+        while (( m <= 4 )){
             printf m;
 
             n = 0;
-            while ( n <= 4 ){
+            while ( (n <= 4) ){
                 printf m;
                 n = n + 1;
 
-                if (n>2)  {
+                if ((n>2))  {
                     printf n;
                     printf 9999;
                 }

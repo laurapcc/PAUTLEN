@@ -9,5 +9,5 @@ main
     a=true;
     a=false;
 
-    a = a>b;
+    a = (a>b);
 }    
